@@ -13,9 +13,10 @@
         <!-- Scripts -->
         @routes
         @viteReactRefresh
-        @vite(['resources/js/app.jsx', "resources/js/pages/{$page['component']}.jsx"])
+        @vite(['resources/js/app.tsx'])
         @inertiaHead
     </head>
+    <div id="app" data-page="{{ json_encode($page) }}"></div>
     <body class="font-sans antialiased">
         @inertia
     </body>
