@@ -1,51 +1,30 @@
-import type { ComponentPropsWithoutRef } from 'react';
-import {
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { toUrl } from '@/lib/utils';
-import { Home, Ticket, User, LifeBuoy } from 'lucide-react'; 
+import { Link } from '@inertiajs/react';
+import { Home, Ticket, User, LifeBuoy } from 'lucide-react';
 import type { NavItem } from '@/types';
 
-export function NavFooter({
-    className,
-    ...props
-}: ComponentPropsWithoutRef<typeof SidebarGroup>) {
-    // Footer menu items
-    const items: NavItem[] = [
-        { title: 'Dashboard', href: '/dashboard', icon: Home },
-        { title: 'Ticket', href: '/tickets', icon: Ticket },
-        { title: 'Profile', href: '/profile', icon: User },
-        { title: 'Support', href: '/support', icon: LifeBuoy },
-    ];
+export default function NavFooter() {
+  const items: NavItem[] = [
+    { title: 'Dashboard', href: '/dashboard', icon: Home },
+    { title: 'Ticket', href: '/tickets', icon: Ticket },
+    { title: 'Profile', href: '/profile', icon: User },
+    { title: 'Support', href: '/support', icon: LifeBuoy },
+  ];
 
-    return (
-        <SidebarGroup
-            {...props}
-            className={`group-data-[collapsible=icon]:p-0 ${className || ''}`}
-        >
-            <SidebarGroupContent>
-                <SidebarMenu className="flex justify-around">
-                    {items.map((item) => (
-                        <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton
-                                asChild
-                                className="flex flex-col items-center justify-center text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100"
-                            >
-                                <a href={toUrl(item.href)}>
-                                    {item.icon && (
-                                        <item.icon className="h-6 w-6 mb-1" />
-                                    )}
-                                    <span className="text-xs">{item.title}</span>
-                                </a>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    ))}
-                </SidebarMenu>
-            </SidebarGroupContent>
-        </SidebarGroup>
-    );
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-white dark:bg-neutral-900">
+      <ul className="flex justify-around">
+        {items.map((item) => (
+          <li key={item.title}>
+            <Link
+              href={item.href}
+              className="flex flex-col items-center gap-1 px-3 py-2 text-xs text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+            >
+              {item.icon && <item.icon className="h-6 w-6" />}
+              <span>{item.title}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
 }
