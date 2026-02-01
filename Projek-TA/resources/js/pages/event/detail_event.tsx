@@ -45,27 +45,29 @@ export default function EventDetail() {
                         <p>📍 {event.location}</p>
                     </div>
 
-                    {/* Price Box */}
                     <div className="mb-8 flex items-center justify-between rounded-xl border bg-gray-50 p-5">
                         <div>
-                            <p className="text-sm text-gray-500">
-                                Harga Tiket
-                            </p>
+                            <p className="text-sm text-gray-500">Harga Tiket</p>
                             <p className="text-2xl font-semibold text-gray-900">
                                 {event.price}
                             </p>
                         </div>
 
-                        <button className="rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700">
+                        <Link
+                            href={`/ticket/buy/${event.id}`}
+                            method="post"
+                            as="button"
+                            className="rounded-md border border-blue-600 px-4 py-2 text-sm text-blue-600"
+                        >
                             Beli Tiket
-                        </button>
+                        </Link>
                     </div>
 
                     <div>
                         <h2 className="mb-3 text-xl font-semibold text-gray-900">
                             Deskripsi Event
                         </h2>
-                        <p className="whitespace-pre-line leading-relaxed text-gray-700">
+                        <p className="leading-relaxed whitespace-pre-line text-gray-700">
                             {event.description}
                         </p>
                     </div>

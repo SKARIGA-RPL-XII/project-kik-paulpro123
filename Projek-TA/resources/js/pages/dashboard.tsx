@@ -1,7 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
-
 const events = [
     {
         id: 1,
