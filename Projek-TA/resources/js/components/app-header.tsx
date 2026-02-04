@@ -19,14 +19,23 @@ export function AppHeader() {
                             <Link href="/register">Register</Link>
                         </>
                     ) : (
-                        <Link
-                            href="/logout"
-                            method="post"
-                            as="button"
-                            className="rounded-md border px-4 py-2 text-sm text-white"
-                        >
-                            Logout
-                        </Link>
+                        <div className="flex items-center gap-2">
+                            <Link
+                                href="/register/eo"
+                                className="rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+                            >
+                                Jadi Event Organizer
+                            </Link>
+
+                            <Link
+                                href="/logout"
+                                method="post"
+                                as="button"
+                                className="rounded-md bg-neutral-900 px-4 py-2 text-sm text-white hover:bg-neutral-800"
+                            >
+                                Logout
+                            </Link>
+                        </div>
                     )}
                 </div>
             </div>

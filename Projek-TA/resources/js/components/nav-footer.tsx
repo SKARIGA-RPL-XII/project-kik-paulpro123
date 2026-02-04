@@ -5,7 +5,7 @@ import type { NavItem } from '@/types';
 export default function NavFooter() {
   const items: NavItem[] = [
     { title: 'Dashboard', href: '/dashboard', icon: Home },
-    { title: 'Ticket', href: '/tickets', icon: Ticket },
+    { title: 'Ticket', href: '/user', icon: Ticket },
     { title: 'Profile', href: '/profile', icon: User },
     { title: 'Support', href: '/support', icon: LifeBuoy },
   ];

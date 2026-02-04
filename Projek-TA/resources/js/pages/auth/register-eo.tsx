@@ -6,12 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { login } from '@/routes';
-import { store } from '@/routes/register';
 
-export default function Register() {
+export default function RegisterEO() {
     return (
         <div className="min-h-screen w-full bg-gradient-to-br from-purple-50 via-white to-blue-50">
-            <Head title="Register" />
+            <Head title="Register Event Organizer" />
 
             <div className="flex min-h-screen items-center justify-center px-4 py-12">
                 <div className="w-full max-w-md">
@@ -30,38 +29,72 @@ export default function Register() {
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth={2}
-                                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                                        d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                                     />
                                 </svg>
                             </div>
                             <h1 className="text-3xl font-bold text-gray-900">
-                                Create Account
+                                Register Event Organizer
                             </h1>
                             <p className="mt-2 text-sm text-gray-600">
-                                Join Eventime and discover amazing events
+                                Create your event organizer account
                             </p>
                         </div>
 
                         {/* Register Form */}
                         <Form
-                            {...store.form()}
-                            resetOnSuccess={[
-                                'password',
-                                'password_confirmation',
-                            ]}
-                            disableWhileProcessing
+                            method="post"
+                            action="/register/eo"
+                            resetOnSuccess={['password', 'password_confirmation']}
                             className="space-y-5"
                         >
                             {({ processing, errors }) => (
                                 <>
                                     <div className="space-y-4">
-                                        {/* Name Field */}
+                                        {/* Organizer Name Field */}
                                         <div className="space-y-2">
                                             <Label
-                                                htmlFor="name"
+                                                htmlFor="organizer_name"
                                                 className="text-sm font-semibold text-gray-700"
                                             >
-                                                Full Name
+                                                Organizer / Company Name
+                                            </Label>
+                                            <div className="relative">
+                                                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                                    <svg
+                                                        className="h-5 w-5 text-gray-400"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                                        />
+                                                    </svg>
+                                                </div>
+                                                <Input
+                                                    id="organizer_name"
+                                                    type="text"
+                                                    name="organizer_name"
+                                                    required
+                                                    autoFocus
+                                                    placeholder="Enter company name"
+                                                    className="h-12 border-gray-300 bg-white pl-10 text-gray-900 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                                                />
+                                            </div>
+                                            <InputError message={errors.organizer_name} />
+                                        </div>
+
+                                        {/* PIC Name Field */}
+                                        <div className="space-y-2">
+                                            <Label
+                                                htmlFor="pic_name"
+                                                className="text-sm font-semibold text-gray-700"
+                                            >
+                                                PIC Name
                                             </Label>
                                             <div className="relative">
                                                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -80,18 +113,15 @@ export default function Register() {
                                                     </svg>
                                                 </div>
                                                 <Input
-                                                    id="name"
+                                                    id="pic_name"
                                                     type="text"
-                                                    required    
-                                                    autoFocus
-                                                    tabIndex={1}
-                                                    autoComplete="name"
-                                                    name="name"
-                                                    placeholder="John Doe"
+                                                    name="pic_name"
+                                                    required
+                                                    placeholder="Enter PIC name"
                                                     className="h-12 border-gray-300 bg-white pl-10 text-gray-900 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
                                                 />
                                             </div>
-                                            <InputError message={errors.name} />
+                                            <InputError message={errors.pic_name} />
                                         </div>
 
                                         {/* Email Field */}
@@ -121,17 +151,49 @@ export default function Register() {
                                                 <Input
                                                     id="email"
                                                     type="email"
-                                                    required
-                                                    tabIndex={2}
-                                                    autoComplete="email"
                                                     name="email"
+                                                    required
                                                     placeholder="email@example.com"
                                                     className="h-12 border-gray-300 bg-white pl-10 text-gray-900 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
                                                 />
                                             </div>
-                                            <InputError
-                                                message={errors.email}
-                                            />
+                                            <InputError message={errors.email} />
+                                        </div>
+
+                                        {/* Phone Field */}
+                                        <div className="space-y-2">
+                                            <Label
+                                                htmlFor="phone"
+                                                className="text-sm font-semibold text-gray-700"
+                                            >
+                                                Phone
+                                            </Label>
+                                            <div className="relative">
+                                                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                                    <svg
+                                                        className="h-5 w-5 text-gray-400"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                                                        />
+                                                    </svg>
+                                                </div>
+                                                <Input
+                                                    id="phone"
+                                                    type="text"
+                                                    name="phone"
+                                                    required
+                                                    placeholder="Enter phone number"
+                                                    className="h-12 border-gray-300 bg-white pl-10 text-gray-900 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                                                />
+                                            </div>
+                                            <InputError message={errors.phone} />
                                         </div>
 
                                         {/* Password Field */}
@@ -161,17 +223,13 @@ export default function Register() {
                                                 <Input
                                                     id="password"
                                                     type="password"
-                                                    required
-                                                    tabIndex={3}
-                                                    autoComplete="new-password"
                                                     name="password"
+                                                    required
                                                     placeholder="Create a strong password"
                                                     className="h-12 border-gray-300 bg-white pl-10 text-gray-900 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
                                                 />
                                             </div>
-                                            <InputError
-                                                message={errors.password}
-                                            />
+                                            <InputError message={errors.password} />
                                         </div>
 
                                         {/* Confirm Password Field */}
@@ -201,18 +259,14 @@ export default function Register() {
                                                 <Input
                                                     id="password_confirmation"
                                                     type="password"
-                                                    required
-                                                    tabIndex={4}
-                                                    autoComplete="new-password"
                                                     name="password_confirmation"
+                                                    required
                                                     placeholder="Confirm your password"
                                                     className="h-12 border-gray-300 bg-white pl-10 text-gray-900 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
                                                 />
                                             </div>
                                             <InputError
-                                                message={
-                                                    errors.password_confirmation
-                                                }
+                                                message={errors.password_confirmation}
                                             />
                                         </div>
 
@@ -241,26 +295,25 @@ export default function Register() {
                                         <Button
                                             type="submit"
                                             className="h-12 w-full bg-gradient-to-r from-purple-600 to-blue-600 font-semibold text-white shadow-lg transition-all duration-200 hover:from-purple-700 hover:to-blue-700 hover:shadow-xl"
-                                            tabIndex={5}
-                                            data-test="register-user-button"
+                                            disabled={processing}
                                         >
                                             {processing && (
                                                 <Spinner className="mr-2" />
                                             )}
                                             {processing
                                                 ? 'Creating account...'
-                                                : 'Create account'}
+                                                : 'Register'}
                                         </Button>
                                     </div>
 
                                     <div className="mt-6 text-center">
                                         <p className="text-sm text-gray-600">
-                                            Already have an account?{' '}
+                                            Sudah punya akun?{' '}
                                             <TextLink
                                                 href={login()}
                                                 className="font-semibold text-blue-600 transition-colors hover:text-blue-700"
                                             >
-                                                Masuk di sini
+                                                Login
                                             </TextLink>
                                         </p>
                                     </div>

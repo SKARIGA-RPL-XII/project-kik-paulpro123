@@ -22,6 +22,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'status',
+        'parent_user_id',
     ];
 
     /**
@@ -49,4 +52,28 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
+    public function eoAccount()
+{
+    return $this->hasOne(User::class, 'parent_user_id');
+}
+
+public function owner()
+{
+    return $this->belongsTo(User::class, 'parent_user_id');
+}
+
+public function isUser()
+{
+    return $this->role === 'user';
+}
+
+public function isEO()
+{
+    return $this->role === 'eo';
+}
+
+public function isAdmin()
+{
+    return $this->role === 'admin';
+}
 }
