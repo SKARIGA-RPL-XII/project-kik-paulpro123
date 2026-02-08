@@ -1,13 +1,11 @@
-export default function AdminDashboard() {
-    return (
-        <div>
-            <h1 className="text-2xl font-bold">
-                Dashboard Admin
-            </h1>
+import AdminLayout from "@/layouts/admin-layout"
 
-            <p className="text-gray-500">
-                Kelola EO, setujui akun, dan kontrol sistem
-            </p>
-        </div>
-    );
+export default function AdminDashboard() {
+  return (
+    <AdminLayout title="Dashboard Admin">
+      <p className="text-gray-600">
+        Selamat datang di dashboard admin.
+      </p>
+    </AdminLayout>
+  )
 }

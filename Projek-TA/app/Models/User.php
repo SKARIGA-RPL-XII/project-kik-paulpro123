@@ -53,27 +53,36 @@ class User extends Authenticatable
         ];
     }
     public function eoAccount()
-{
-    return $this->hasOne(User::class, 'parent_user_id');
-}
+    {
+        return $this->hasOne(User::class, 'parent_user_id');
+    }
 
-public function owner()
+    public function eventOrganizer()
+    {
+        return $this->hasOne(EventOrganizer::class);
+    }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'parent_user_id');
+    }
+
+    public function isUser()
+    {
+        return $this->role === 'user';
+    }
+
+    public function isEO()
+    {
+        return $this->role === 'eo';
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+    public function parentUser()
 {
     return $this->belongsTo(User::class, 'parent_user_id');
-}
-
-public function isUser()
-{
-    return $this->role === 'user';
-}
-
-public function isEO()
-{
-    return $this->role === 'eo';
-}
-
-public function isAdmin()
-{
-    return $this->role === 'admin';
 }
 }

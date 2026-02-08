@@ -1,45 +1,28 @@
 <?php
-
-use App\Http\Controllers\EO\RegisterEOController;
+use App\Http\Controllers\Eo\RegisterEOController;
+use App\Http\Controllers\Eo\EventController;
+use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
-/*
-|--------------------------------------------------------------------------
-| PUBLIC
-|--------------------------------------------------------------------------
-*/
+// Public Routes
 Route::get('/', function () {
     return Inertia::render('dashboard', [
         'canRegister' => Features::enabled(Features::registration()),
     ]);
 })->name('home');
 
-/*
-|--------------------------------------------------------------------------
-| LOGIN (VIEW ONLY – TIDAK MERUSAK FORTIFY)
-|--------------------------------------------------------------------------
-*/
+// Login
 Route::middleware('guest')->get('/login', function () {
     return Inertia::render('auth/login');
 })->name('login');
 
-/*
-|--------------------------------------------------------------------------
-| USER & EO AREA (AUTH)
-|--------------------------------------------------------------------------
-*/
+// Login 3 Role
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    /**
-     * 🔑 DASHBOARD (ROLE AWARE)
-     * - user  -> dashboard (lama, tidak rusak)
-     * - eo    -> eo/dashboard
-     * - admin -> admin/dashboard
-     */
     Route::get('/dashboard', function () {
         $user = Auth::user();
 
@@ -57,11 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    /*
-    |--------------------------------------------------------------------------
-    | USER ROUTE (AMAN)
-    |--------------------------------------------------------------------------
-    */
+    // User Routes
     Route::get('/user', function () {
         return Inertia::render('user/ticket_event');
     })->name('tickets');
@@ -72,11 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | REGISTER EO (USER → CREATE EO ACCOUNT)
-    |--------------------------------------------------------------------------
-    */
+    // Register EO Routes
     Route::get('/register/eo', function () {
         return Inertia::render('auth/register-eo');
     })->name('register.eo.form');
@@ -85,11 +60,44 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('register.eo');
 });
 
-/*
-|--------------------------------------------------------------------------
-| LOGOUT
-|--------------------------------------------------------------------------
-*/
+// EO Routes
+Route::middleware(['auth', 'verified', 'role:eo'])
+    ->prefix('eo')
+    ->name('eo.')
+    ->group(function () {
+
+        Route::get('/manage-event', [EventController::class, 'index'])->name('events.index');
+        Route::post('/manage-event', [EventController::class, 'store'])->name('events.store');
+        Route::put('/manage-event{event}', [EventController::class, 'update'])->name('events.update');
+        Route::delete('/manage-event{event}', [EventController::class, 'destroy'])->name('events.destroy');
+
+    });
+
+// Admin Routes
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+        Route::get('/dashboard', function () {
+            return Inertia::render('admin/dashboard');
+        })->name('dashboard');
+
+        Route::get('/manage-akun', [AdminController::class, 'index'])
+            ->name('accounts');
+
+
+        Route::get('/akun-approval', [AdminController::class, 'eoApproval'])
+            ->name('accounts.approval');
+
+        Route::post('/eo/{eo}/approve', [AdminController::class, 'approveEO'])
+            ->name('eo.approve');
+
+        Route::post('/eo/{eo}/reject', [AdminController::class, 'rejectEO'])
+            ->name('eo.reject');
+    });
+
+// Logout
 Route::post('/logout', function (Request $request) {
     Auth::logout();
 
@@ -99,9 +107,5 @@ Route::post('/logout', function (Request $request) {
     return redirect()->route('home');
 })->middleware('auth')->name('logout');
 
-/*
-|--------------------------------------------------------------------------
-| SETTINGS
-|--------------------------------------------------------------------------
-*/
+// Setinggs
 require __DIR__ . '/settings.php';

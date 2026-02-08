@@ -1,27 +1,30 @@
-import { Head } from '@inertiajs/react';
+import { Head } from "@inertiajs/react"
+import EOLayout from "@/layouts/eo-layout"
 
 export default function EODashboard({ status }: { status: string }) {
-    return (
-        <>
-            <Head title="Dashboard EO" />
+  return (
+    <EOLayout title="Dashboard Event Organizer">
+      <Head title="Dashboard EO" />
 
-            {status === 'pending' ? (
-                <div className="text-center mt-20">
-                    <h1 className="text-2xl font-bold">
-                        Akun EO Menunggu Persetujuan Admin
-                    </h1>
-                    <p className="text-gray-500 mt-2">
-                        Silakan tunggu, fitur akan aktif setelah disetujui.
-                    </p>
-                </div>
-            ) : (
-                <div>
-                    <h1 className="text-2xl font-bold">
-                        Dashboard Event Organizer
-                    </h1>
-
-                </div>
-            )}
-        </>
-    );
+      {status === "pending" ? (
+        <div className="text-center py-24">
+          <h2 className="text-2xl font-bold">
+            Akun EO Menunggu Persetujuan Admin
+          </h2>
+          <p className="text-gray-500 mt-2">
+            Silakan tunggu, fitur akan aktif setelah disetujui.
+          </p>
+        </div>
+      ) : (
+        <div>
+          <h2 className="text-xl font-semibold mb-2">
+            Selamat Datang 👋
+          </h2>
+          <p className="text-gray-600">
+            Kelola event, tiket, dan laporan kamu di sini.
+          </p>
+        </div>
+      )}
+    </EOLayout>
+  )
 }
