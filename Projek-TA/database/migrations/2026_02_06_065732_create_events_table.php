@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->string('location');
-            $table->enum('status', ['draft', 'published'])->default('draft');
+            $table->enum('status', ['draft', 'published', 'rejected'])->default('draft');
             $table->timestamps();
         });
     }

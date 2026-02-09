@@ -5,8 +5,7 @@ export default function EOSidebar() {
 
   const menus = [
     { label: "Dashboard", href: "/eo/dashboard" },
-    { label: "Event Saya", href: "/eo/manage-event" },
-    { label: "Tiket", href: "/eo/tickets" },
+    { label: "Event", href: "/eo/manage-event" },
     { label: "Laporan", href: "/eo/reports" },
   ]
 

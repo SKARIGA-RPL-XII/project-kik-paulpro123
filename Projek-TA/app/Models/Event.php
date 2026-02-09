@@ -18,9 +18,22 @@ class Event extends Model
         'location',
         'status',
     ];
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+    ];
 
     public function eo()
     {
         return $this->belongsTo(User::class, 'eo_id');
     }
+
+    public function images()
+{
+    return $this->hasMany(EventImage::class);
+}
+public function tickets()
+{
+    return $this->hasMany(Ticket::class);
+}
 }

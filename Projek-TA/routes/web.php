@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\Eo\RegisterEOController;
 use App\Http\Controllers\Eo\EventController;
+use App\Http\Controllers\Eo\TicketController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -66,11 +67,38 @@ Route::middleware(['auth', 'verified', 'role:eo'])
     ->name('eo.')
     ->group(function () {
 
-        Route::get('/manage-event', [EventController::class, 'index'])->name('events.index');
-        Route::post('/manage-event', [EventController::class, 'store'])->name('events.store');
-        Route::put('/manage-event{event}', [EventController::class, 'update'])->name('events.update');
-        Route::delete('/manage-event{event}', [EventController::class, 'destroy'])->name('events.destroy');
+        // Kelola Event
+        Route::get('/dashboard', function () {
+            return Inertia::render('eo/dashboard');
+        })->name('dashboard');
 
+        Route::get('/manage-event', [EventController::class, 'index'])
+            ->name('events.index');
+
+        Route::post('/manage-event', [EventController::class, 'store'])
+            ->name('events.store');
+
+        Route::put('/manage-event/{event}', [EventController::class, 'update'])
+            ->name('events.update');
+
+        Route::delete('/manage-event/{event}', [EventController::class, 'destroy'])
+            ->name('events.destroy');
+
+        Route::delete('/event-image/{image}', [EventController::class, 'destroyImage'])
+            ->name('events.images.destroy');
+
+        // Kelola Ticket
+        Route::get('/events/{event}/tickets', [TicketController::class, 'index'])
+            ->name('events.tickets.index');
+
+        Route::post('/events/{event}/tickets', [TicketController::class, 'store'])
+            ->name('events.tickets.store');
+
+        Route::put('/tickets/{ticket}', [TicketController::class, 'update'])
+            ->name('tickets.update');
+
+        Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])
+            ->name('tickets.destroy');
     });
 
 // Admin Routes
@@ -79,14 +107,15 @@ Route::middleware(['auth', 'role:admin'])
     ->name('admin.')
     ->group(function () {
 
+        // Dashboard Admin
         Route::get('/dashboard', function () {
             return Inertia::render('admin/dashboard');
         })->name('dashboard');
-
+        // Kelola Akun
         Route::get('/manage-akun', [AdminController::class, 'index'])
             ->name('accounts');
 
-
+        // Verifikasi EO
         Route::get('/akun-approval', [AdminController::class, 'eoApproval'])
             ->name('accounts.approval');
 
@@ -95,6 +124,20 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::post('/eo/{eo}/reject', [AdminController::class, 'rejectEO'])
             ->name('eo.reject');
+
+        // Verfikasi Publish Event (Defaul: draft, Publish, Reject)
+        Route::get('/event-approval', [AdminController::class, 'eventApproval'])
+            ->name('events.index');
+
+        Route::patch(
+            '/events/{event}/publish',
+            [AdminController::class, 'publish']
+        )->name('events.publish');
+
+        Route::patch(
+            '/events/{event}/reject',
+            [AdminController::class, 'reject']
+        )->name('events.reject');
     });
 
 // Logout

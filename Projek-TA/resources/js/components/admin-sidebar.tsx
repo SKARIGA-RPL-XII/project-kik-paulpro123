@@ -21,9 +21,9 @@ const menuItems = [
     icon: UserCheck,
   },
   {
-    id: "manage-event",
+    id: "event-approval",
     label: "Kelola Event",
-    href: "/admin/kelola-event",
+    href: "/admin/event-approval",
     icon: UserCheck,
   },
   {

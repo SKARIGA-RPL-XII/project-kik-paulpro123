@@ -1,4 +1,5 @@
 import { Head, router, usePage } from '@inertiajs/react';
+import { Ticket } from 'lucide-react';
 import { useState } from 'react';
 import EOLayout from '@/layouts/eo-layout';
 import { Calendar, MapPin, Plus, Clock, Edit3 } from 'lucide-react';
@@ -7,13 +8,20 @@ interface Event {
     id: number;
     title: string;
     location: string;
+    description: string | null;
     start_date: string;
     end_date: string;
-    status: 'draft' | 'published';
+    status: 'draft' | 'published' | 'rejected';
+    images: EventImage[];
+}
+
+interface EventImage {
+    id: number;
+    image: string;
 }
 
 export default function ManageEvent() {
-    const { events } = usePage<{ events: Event[] }>().props;
+    const { events = [] } = usePage<{ events?: Event[] }>().props;
 
     const [form, setForm] = useState({
         title: '',
@@ -21,38 +29,71 @@ export default function ManageEvent() {
         start_date: '',
         end_date: '',
         location: '',
+        images: [] as File[],
     });
     const [editingId, setEditingId] = useState<number | null>(null);
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
 
+        const data = new FormData();
+        data.append('title', form.title);
+        data.append('description', form.description);
+        data.append('location', form.location);
+        data.append('start_date', form.start_date);
+        data.append('end_date', form.end_date);
+
+        form.images.forEach((file, i) => {
+            data.append(`images[${i}]`, file);
+        });
+
         if (editingId) {
-            router.put(`/eo/manage-event/${editingId}`, form, {
+            data.append('_method', 'PUT');
+
+            router.post(`/eo/manage-event/${editingId}`, data, {
                 preserveScroll: true,
-                onSuccess: () => {
-                    setEditingId(null);
-                    setForm({
-                        title: '',
-                        description: '',
-                        start_date: '',
-                        end_date: '',
-                        location: '',
-                    });
-                },
+                forceFormData: true,
+                onSuccess: resetForm,
             });
         } else {
-            router.post('/eo/manage-event', form, {
+            router.post('/eo/manage-event', data, {
                 preserveScroll: true,
-                onSuccess: () =>
-                    setForm({
-                        title: '',
-                        description: '',
-                        start_date: '',
-                        end_date: '',
-                        location: '',
-                    }),
+                forceFormData: true,
+                onSuccess: resetForm,
             });
         }
+    };
+
+    const resetForm = () => {
+        setEditingId(null);
+        setForm({
+            title: '',
+            description: '',
+            start_date: '',
+            end_date: '',
+            location: '',
+            images: [],
+        });
+    };
+
+    const [existingImages, setExistingImages] = useState<EventImage[]>([]);
+    const deleteImage = (id: number) => {
+        if (!confirm('Hapus gambar ini?')) return;
+
+        router.delete(`/eo/event-image/${id}`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setExistingImages((prev) =>
+                    prev.filter((img) => img.id !== id),
+                );
+            },
+        });
+    };
+
+    const toDatetimeLocal = (date: string) => {
+        const d = new Date(date);
+        const pad = (n: number) => n.toString().padStart(2, '0');
+
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     };
 
     return (
@@ -90,7 +131,7 @@ export default function ManageEvent() {
                                 <Plus className="h-4 w-4 text-blue-600" />
                             </div>
                             <h2 className="text-base font-semibold text-slate-800">
-                                New Event
+                                {editingId ? 'Edit Event' : 'New Event'}
                             </h2>
                         </div>
 
@@ -194,13 +235,77 @@ export default function ManageEvent() {
                                 />
                             </div>
 
+                            {/* Gambar Event */}
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-medium tracking-wide text-slate-600 uppercase">
+                                    Gambar Event (1–3)
+                                </label>
+
+                                <div className="flex gap-3">
+                                    <label className="flex h-32 w-24 cursor-pointer items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            hidden
+                                            onChange={(e) => {
+                                                const files = Array.from(
+                                                    e.target.files ?? [],
+                                                ).slice(0, 3);
+                                                setForm({
+                                                    ...form,
+                                                    images: files,
+                                                });
+                                            }}
+                                        />
+                                        <Plus className="h-5 w-5 text-slate-400" />
+                                    </label>
+
+                                    {form.images.map((file, i) => (
+                                        <img
+                                            key={i}
+                                            src={URL.createObjectURL(file)}
+                                            className="h-32 w-24 rounded-lg object-cover shadow"
+                                        />
+                                    ))}
+                                </div>
+
+                                <p className="text-xs text-slate-400">
+                                    Maksimal 3 gambar (JPG, PNG, WEBP)
+                                </p>
+                            </div>
+
+                            {editingId && existingImages.length > 0 && (
+                                <div className="flex gap-2 pt-2">
+                                    {existingImages.map((img) => (
+                                        <div key={img.id} className="relative">
+                                            <img
+                                                src={`/storage/${img.image}`}
+                                                className="h-24 w-16 rounded-md border object-cover"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    deleteImage(img.id)
+                                                }
+                                                className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-600 text-xs text-white"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
                             <div className="flex justify-end pt-2">
                                 <button
                                     type="submit"
                                     className="flex items-center gap-2 rounded-lg bg-slate-900 px-6 py-2.5 text-sm font-medium text-white transition-all hover:bg-slate-800"
                                 >
                                     <Plus className="h-4 w-4" />
-                                    Create Event
+                                    {editingId
+                                        ? 'Update Event'
+                                        : 'Create Event'}
                                 </button>
                             </div>
                         </form>
@@ -231,101 +336,168 @@ export default function ManageEvent() {
                                     >
                                         <div className="flex items-center justify-between p-4">
                                             {/* Left Content */}
-                                            <div className="min-w-0 flex-1">
-                                                <div className="mb-2 flex items-center gap-3">
-                                                    <h3 className="truncate text-sm font-semibold text-slate-900 transition-colors group-hover:text-blue-600">
-                                                        {event.title}
-                                                    </h3>
-                                                    <span
-                                                        className={`rounded px-2 py-0.5 text-xs font-medium ${
-                                                            event.status ===
-                                                            'published'
-                                                                ? 'border border-emerald-200 bg-emerald-50 text-emerald-700'
-                                                                : 'border border-amber-200 bg-amber-50 text-amber-700'
-                                                        }`}
-                                                    >
-                                                        {event.status}
-                                                    </span>
+                                            <div className="flex min-w-0 flex-1 gap-4">
+                                                {/* Image Slider */}
+                                                <div className="relative w-[60px] overflow-hidden">
+                                                    {(event.images ?? [])
+                                                        .length > 0 ? (
+                                                        <div className="scrollbar-hide flex snap-x snap-mandatory overflow-x-auto">
+                                                            {event.images
+                                                                .slice(0, 5)
+                                                                .map((img) => (
+                                                                    <img
+                                                                        key={
+                                                                            img.id
+                                                                        }
+                                                                        src={`/storage/${img.image}`}
+                                                                        alt={
+                                                                            event.title
+                                                                        }
+                                                                        className="h-14 w-14 shrink-0 snap-center rounded-md border object-cover"
+                                                                    />
+                                                                ))}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex h-14 w-14 items-center justify-center rounded-md bg-slate-100 text-xs text-slate-400">
+                                                            No Image
+                                                        </div>
+                                                    )}
                                                 </div>
 
-                                                <div className="flex items-center gap-4 text-xs text-slate-500">
-                                                    <div className="flex items-center gap-1.5">
-                                                        <MapPin className="h-3.5 w-3.5" />
-                                                        <span>
-                                                            {event.location}
+                                                {/* Event Info */}
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="mb-1 flex items-center gap-2">
+                                                        <h3 className="truncate text-sm font-semibold text-slate-900 group-hover:text-blue-600">
+                                                            {event.title}
+                                                        </h3>
+                                                        <span
+                                                            className={`rounded px-2 py-0.5 text-xs font-medium ${
+                                                                event.status ===
+                                                                'published'
+                                                                    ? 'border border-emerald-200 bg-emerald-50 text-emerald-700'
+                                                                    : event.status ===
+                                                                        'rejected'
+                                                                      ? 'border border-red-200 bg-red-50 text-red-700'
+                                                                      : 'border border-amber-200 bg-amber-50 text-amber-700'
+                                                            }`}
+                                                        >
+                                                            {event.status}
                                                         </span>
                                                     </div>
-                                                    <div className="flex items-center gap-1.5">
-                                                        <Calendar className="h-3.5 w-3.5" />
-                                                        <span>
-                                                            {new Date(
-                                                                event.start_date,
-                                                            ).toLocaleDateString(
-                                                                'en-US',
-                                                                {
-                                                                    month: 'short',
-                                                                    day: 'numeric',
-                                                                    year: 'numeric',
-                                                                },
-                                                            )}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1.5">
-                                                        <Clock className="h-3.5 w-3.5" />
-                                                        <span>
-                                                            {new Date(
-                                                                event.start_date,
-                                                            ).toLocaleTimeString(
-                                                                'en-US',
-                                                                {
-                                                                    hour: '2-digit',
-                                                                    minute: '2-digit',
-                                                                },
-                                                            )}
-                                                        </span>
+
+                                                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
+                                                        <div className="flex items-center gap-1.5">
+                                                            <MapPin className="h-3.5 w-3.5" />
+                                                            <span>
+                                                                {event.location}
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-1.5">
+                                                            <Calendar className="h-3.5 w-3.5" />
+                                                            <span>
+                                                                {new Date(
+                                                                    event.start_date,
+                                                                ).toLocaleDateString(
+                                                                    'en-US',
+                                                                    {
+                                                                        month: 'short',
+                                                                        day: 'numeric',
+                                                                        year: 'numeric',
+                                                                    },
+                                                                )}
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-1.5">
+                                                            <Clock className="h-3.5 w-3.5" />
+                                                            <span>
+                                                                {new Date(
+                                                                    event.start_date,
+                                                                ).toLocaleTimeString(
+                                                                    'en-US',
+                                                                    {
+                                                                        hour: '2-digit',
+                                                                        minute: '2-digit',
+                                                                    },
+                                                                )}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             {/* Right Action */}
-                                            <button
-                                                onClick={() => {
-                                                    setEditingId(event.id);
-                                                    setForm({
-                                                        title: event.title,
-                                                        description: '',
-                                                        start_date:
-                                                            event.start_date,
-                                                        end_date:
-                                                            event.end_date,
-                                                        location:
-                                                            event.location,
-                                                    });
-                                                }}
-                                                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900"
-                                            >
-                                                <Edit3 className="h-3.5 w-3.5" />
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    if (
-                                                        confirm(
-                                                            'Hapus event ini?',
+                                            <div className="flex items-center gap-2">
+                                                {/* Kelola Ticket */}
+                                                <button
+                                                    onClick={() =>
+                                                        router.get(
+                                                            `/eo/events/${event.id}/tickets`,
                                                         )
-                                                    ) {
-                                                        router.delete(
-                                                            `/eo/manage-event/${event.id}`,
-                                                            {
-                                                                preserveScroll: true,
-                                                            },
-                                                        );
                                                     }
-                                                }}
-                                                className="rounded-lg px-3 py-1.5 text-xs font-medium text-red-600 transition-all hover:bg-red-50"
-                                            >
-                                                Hapus
-                                            </button>
+                                                    className="flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition hover:bg-blue-100"
+                                                >
+                                                    <Ticket className="h-3.5 w-3.5" />
+                                                    Ticket
+                                                </button>
+
+                                                {/* Edit */}
+                                                <button
+                                                    onClick={() => {
+                                                        setEditingId(event.id);
+                                                        setForm({
+                                                            title: event.title,
+                                                            description:
+                                                                event.description ??
+                                                                '',
+                                                            start_date:
+                                                                toDatetimeLocal(
+                                                                    event.start_date,
+                                                                ),
+                                                            end_date:
+                                                                toDatetimeLocal(
+                                                                    event.end_date,
+                                                                ),
+                                                            location:
+                                                                event.location,
+                                                            images: [],
+                                                        });
+                                                        setExistingImages(
+                                                            event.images ?? [],
+                                                        );
+                                                        window.scrollTo({
+                                                            top: 0,
+                                                            behavior: 'smooth',
+                                                        });
+                                                    }}
+                                                    className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900"
+                                                >
+                                                    <Edit3 className="h-3.5 w-3.5" />
+                                                    Edit
+                                                </button>
+
+                                                {/* Hapus */}
+                                                <button
+                                                    onClick={() => {
+                                                        if (
+                                                            confirm(
+                                                                'Hapus event ini?',
+                                                            )
+                                                        ) {
+                                                            router.delete(
+                                                                `/eo/manage-event/${event.id}`,
+                                                                {
+                                                                    preserveScroll: true,
+                                                                },
+                                                            );
+                                                        }
+                                                    }}
+                                                    className="rounded-lg px-3 py-1.5 text-xs font-medium text-red-600 transition-all hover:bg-red-50"
+                                                >
+                                                    Hapus
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
