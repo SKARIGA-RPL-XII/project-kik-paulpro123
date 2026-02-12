@@ -22,7 +22,7 @@ const menuItems = [
   },
   {
     id: "event-approval",
-    label: "Kelola Event",
+    label: "Persetujuan Event",
     href: "/admin/event-approval",
     icon: UserCheck,
   },

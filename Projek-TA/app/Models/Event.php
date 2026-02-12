@@ -29,11 +29,11 @@ class Event extends Model
     }
 
     public function images()
-{
-    return $this->hasMany(EventImage::class);
-}
-public function tickets()
-{
-    return $this->hasMany(Ticket::class);
-}
+    {
+        return $this->hasMany(EventImage::class);
+    }
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }

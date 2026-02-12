@@ -1,64 +1,46 @@
 import { Head, Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
-const events = [
-    {
-        id: 1,
-        title: 'TECHNOFEST 7.0',
-        date: '15 Nov 2025 • 02:00',
-        location: 'Stadion Maguwoharjo • Sleman, DI Yogyakarta',
-        price: 'Mulai Rp 57.000',
-        image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800',
-    },
-    {
-        id: 2,
-        title: 'HIPHOP NIGHT Yogyakarta',
-        date: '29 Nov 2025 • 21:00',
-        location: 'JNM • Jogjakarta, DI Yogyakarta',
-        price: 'Mulai Rp 15.000',
-        image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800',
-    },
-    {
-        id: 3,
-        title: 'ORKESTRA vol.8',
-        date: '13 Dec 2025 • 00:00',
-        location: 'Parking area Kyai Langgeng Ecopark • Magelang',
-        price: 'Mulai Rp 40.000',
-        image: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800',
-    },
-    {
-        id: 4,
-        title: 'JOGJABEACH ARENA',
-        date: '19 Dec 2025 • 19:00',
-        location: 'Parangtritis • Bantul, DI Yogyakarta',
-        price: 'Mulai Rp 85.000',
-        image: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800',
-    },
-    {
-        id: 5,
-        title: 'Premium Concert',
-        date: '30 Dec 2025 • 20:00',
-        location: 'Jogja Expo Center, DI Yogyakarta',
-        price: 'Mulai Rp 120.000',
-        image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800',
-    },
-];
+import { usePage } from '@inertiajs/react';
+
+interface EventImage {
+    id: number;
+    image: string;
+}
+
+interface Event {
+    id: number;
+    title: string;
+    location: string;
+    start_date: string;
+    images: EventImage[];
+    tickets_min_price: number | null;
+}
 
 export default function Dashboard() {
+    const { events = [] } = usePage<{ events: Event[] }>().props;
     return (
         <AppLayout>
             <Head title="Dashboard" />
 
-            <div className="min-h-screen w-full bg-white">
-                <div className="mx-auto max-w-7xl px-6 py-8">
-                    <div className="mb-10 flex justify-center">
-                        <div className="relative w-full max-w-3xl">
+            <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+                <div className="mx-auto max-w-7xl px-6 py-12">
+                    {/* Hero Section with Search */}
+                    <div className="mb-12 text-center">
+                        <h1 className="mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-4xl font-bold text-transparent">
+                            Temukan Event Terbaik
+                        </h1>
+                        <p className="mb-8 text-gray-600">
+                            Jelajahi berbagai event menarik di sekitarmu
+                        </p>
+
+                        <div className="relative mx-auto w-full max-w-3xl">
                             <input
                                 type="text"
                                 placeholder="Cari event impianmu..."
-                                className="w-full rounded-full bg-gray-100 px-6 py-4 pl-14 text-base text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                className="w-full rounded-2xl border-2 border-gray-200 bg-white px-6 py-5 pl-14 text-base text-gray-900 shadow-lg transition-all duration-300 placeholder:text-gray-400 focus:border-blue-500 focus:shadow-xl focus:ring-4 focus:ring-blue-100 focus:outline-none"
                             />
                             <svg
-                                className="absolute top-1/2 left-5 h-5 w-5 -translate-y-1/2 text-gray-400"
+                                className="absolute top-1/2 left-5 h-6 w-6 -translate-y-1/2 text-gray-400"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -70,56 +52,160 @@ export default function Dashboard() {
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                                 />
                             </svg>
+                            <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-gray-900/5 ring-inset"></div>
                         </div>
                     </div>
 
-                    <div className="mb-5 flex items-center justify-between">
+                    {/* Section Header */}
+                    <div className="mb-8 flex items-center justify-between">
                         <div>
-                            <h2 className="text-xl font-semibold text-gray-900">
+                            <h2 className="mb-1 text-2xl font-bold text-gray-900">
                                 Official Event
                             </h2>
-                            <p className="text-sm text-gray-500">
+                            <p className="flex items-center gap-2 text-sm text-gray-600">
+                                <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500"></span>
                                 Event yang bisa beli tiket lewat Eventime
                             </p>
                         </div>
 
-                        <button className="text-sm font-medium text-blue-600 hover:underline">
-                            Lihat Semua →
+                        <button className="group flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:bg-blue-700 hover:shadow-lg">
+                            Lihat Semua
+                            <svg
+                                className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M9 5l7 7-7 7"
+                                />
+                            </svg>
                         </button>
                     </div>
 
+                    {/* Event Cards Grid */}
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        {events.map((event) => (
-                            <Link key={event.id} href={`/event/${event.id}`}>
-                                <div className="overflow-hidden rounded-xl border bg-white transition hover:shadow-lg">
-                                    <div className="relative h-44">
+                        {events.map((event, index) => (
+                            <Link
+                                key={event.id}
+                                href={`/events/${event.id}`}
+                                className="group"
+                                style={{
+                                    animationDelay: `${index * 100}ms`,
+                                }}
+                            >
+                                <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                                    {/* Image Container */}
+                                    <div className="relative h-48 overflow-hidden">
                                         <img
-                                            src={event.image}
-                                            alt={event.title}   
-                                            className="h-full w-full object-cover"
+                                            src={
+                                                event.images?.length > 0
+                                                    ? `/storage/${event.images[0].image}`
+                                                    : 'https://via.placeholder.com/400x300?text=No+Image'
+                                            }
+                                            alt={event.title}
+                                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                                         />
 
-                                        <span className="absolute top-3 right-3 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
+                                        {/* Gradient Overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+
+                                        {/* Official Badge */}
+                                        <span className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow-lg backdrop-blur-sm">
+                                            <svg
+                                                className="h-3 w-3"
+                                                fill="currentColor"
+                                                viewBox="0 0 20 20"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
                                             RESMI
                                         </span>
 
-                                        <span className="absolute bottom-3 left-3 rounded-full bg-yellow-400 px-3 py-1 text-xs font-semibold text-gray-900">
-                                            {event.price}
-                                        </span>
+                                        {/* Price Badge */}
+<span className="absolute bottom-3 left-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 px-4 py-1.5 text-xs font-bold text-gray-900 shadow-lg">
+    {event.tickets_min_price
+        ? `Mulai Rp ${Number(event.tickets_min_price).toLocaleString('id-ID')}`
+        : 'Gratis'}
+</span>
                                     </div>
 
-                                    <div className="space-y-2 p-4">
-                                        <h3 className="line-clamp-2 font-semibold text-gray-900">
+                                    {/* Card Content */}
+                                    <div className="space-y-3 p-5">
+                                        <h3 className="line-clamp-2 text-lg font-bold text-gray-900 transition-colors duration-300 group-hover:text-blue-600">
                                             {event.title}
                                         </h3>
 
-                                        <p className="text-sm text-gray-500">
-                                            📅 {event.date}
-                                        </p>
+                                        <div className="space-y-2">
+                                            <p className="flex items-start gap-2 text-sm text-gray-600">
+                                                <svg
+                                                    className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-500"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                                    />
+                                                </svg>
+                                                <span>
+                                                    {new Date(
+                                                        event.start_date,
+                                                    ).toLocaleDateString(
+                                                        'id-ID',
+                                                        {
+                                                            day: 'numeric',
+                                                            month: 'short',
+                                                            year: 'numeric',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                            timeZone:
+                                                                'Asia/Jakarta',
+                                                        },
+                                                    )}
+                                                </span>
+                                            </p>
 
-                                        <p className="line-clamp-2 text-sm text-gray-500">
-                                            📍 {event.location}
-                                        </p>
+                                            <p className="flex items-start gap-2 text-sm text-gray-600">
+                                                <svg
+                                                    className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                                    />
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                                    />
+                                                </svg>
+                                                <span className="line-clamp-2">
+                                                    {event.location}
+                                                </span>
+                                            </p>
+                                        </div>
+
+                                        {/* CTA Button */}
+                                        <button className="mt-4 w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:shadow-lg">
+                                            Lihat Detail
+                                        </button>
                                     </div>
                                 </div>
                             </Link>

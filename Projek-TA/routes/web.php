@@ -3,6 +3,7 @@ use App\Http\Controllers\Eo\RegisterEOController;
 use App\Http\Controllers\Eo\EventController;
 use App\Http\Controllers\Eo\TicketController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,8 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return Inertia::render('admin/dashboard');
         }
 
-        // DEFAULT USER (TIDAK DIUBAH)
-        return Inertia::render('dashboard');
+        // Defaylt User
+        return app(UserController::class)->index();
     })->name('dashboard');
 
     // User Routes
@@ -46,11 +47,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('user/ticket_event');
     })->name('tickets');
 
-    Route::get('/user/{id}', function ($id) {
-        return Inertia::render('user/detail_event', [
-            'id' => $id,
-        ]);
-    });
+    Route::get('/events', [UserController::class, 'events'])
+        ->name('user.events');
+
+    Route::get('/events/{event}', [UserController::class, 'show'])
+        ->name('user.events.show');
 
     // Register EO Routes
     Route::get('/register/eo', function () {
@@ -71,6 +72,16 @@ Route::middleware(['auth', 'verified', 'role:eo'])
         Route::get('/dashboard', function () {
             return Inertia::render('eo/dashboard');
         })->name('dashboard');
+
+        Route::get('/manage-event/create', function () {
+            return Inertia::render('eo/event-form');
+        })->middleware(['auth']);
+
+        Route::get('/manage-event/{event}/edit', function (\App\Models\Event $event) {
+            return Inertia::render('eo/event-form', [
+                'event' => $event->load('images'),
+            ]);
+        })->middleware(['auth']);
 
         Route::get('/manage-event', [EventController::class, 'index'])
             ->name('events.index');

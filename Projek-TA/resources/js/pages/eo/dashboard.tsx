@@ -16,7 +16,6 @@ import {
 } from "lucide-react"
 
 export default function EODashboard({ status }: { status: string }) {
-  // Sample data - replace with real data from your backend
   const stats = [
     {
       title: "Total Event",
