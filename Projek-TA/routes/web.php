@@ -16,9 +16,10 @@ Route::middleware('guest')->get('/login', function () {
     return Inertia::render('auth/login');
 })->name('login');
 
-// Login 3 Role
+// User Routes
 Route::middleware(['auth', 'verified'])->group(function () {
 
+    // Login 3 role
     Route::get('/dashboard', function () {
         $user = Auth::user();
 
@@ -46,6 +47,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/events/{event}', [UserController::class, 'show'])
         ->name('user.events.show');
+
+    Route::get('/checkout/{ticket}', function (\App\Models\Ticket $ticket) {
+        return Inertia::render('user/checkout', [
+            'ticket' => $ticket->load('event'),
+        ]);
+
+        Route::post('/order', [App\Http\Controllers\User\OrderController::class, 'store']);
+    });
 
     // Register EO Routes
     Route::get('/register/eo', function () {
