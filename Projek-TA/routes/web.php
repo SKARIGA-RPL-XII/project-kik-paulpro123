@@ -8,14 +8,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
-
 // Public Routes
-Route::get('/', function () {
-    return Inertia::render('dashboard', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
-})->name('home');
+Route::get('/', [UserController::class, 'index'])->name('home');
 
 // Login
 Route::middleware('guest')->get('/login', function () {

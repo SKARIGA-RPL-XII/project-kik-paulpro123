@@ -130,11 +130,11 @@ export default function Dashboard() {
                                         </span>
 
                                         {/* Price Badge */}
-<span className="absolute bottom-3 left-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 px-4 py-1.5 text-xs font-bold text-gray-900 shadow-lg">
-    {event.tickets_min_price
-        ? `Mulai Rp ${Number(event.tickets_min_price).toLocaleString('id-ID')}`
-        : 'Gratis'}
-</span>
+                                        <span className="absolute bottom-3 left-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 px-4 py-1.5 text-xs font-bold text-gray-900 shadow-lg">
+                                            {event.tickets_min_price
+                                                ? `Mulai Rp ${Number(event.tickets_min_price).toLocaleString('id-ID')}`
+                                                : 'Gratis'}
+                                        </span>
                                     </div>
 
                                     {/* Card Content */}

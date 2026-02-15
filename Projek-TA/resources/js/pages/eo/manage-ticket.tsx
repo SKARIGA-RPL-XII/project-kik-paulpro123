@@ -25,6 +25,7 @@ export default function ManageTicket() {
     const { event } = usePage<{ event: Event }>().props;
 
     const [form, setForm] = useState({
+        
         name: '',
         price: '',
         kuota: '',

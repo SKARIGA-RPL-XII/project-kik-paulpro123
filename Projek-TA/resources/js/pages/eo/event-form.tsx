@@ -105,8 +105,18 @@ export default function EventForm() {
                 },
                 {
                     forceFormData: true,
+                    onSuccess: () => {
+                        router.visit('/eo/manage-event');
+                    },
                 },
             );
+        } else {
+            router.post('/eo/manage-event', form, {
+                forceFormData: true,
+                onSuccess: () => {
+                    router.visit('/eo/manage-event');
+                },
+            });
         }
     };
 

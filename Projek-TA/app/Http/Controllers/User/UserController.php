@@ -3,6 +3,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use Laravel\Fortify\Features;
 
 class UserController extends Controller
 {
@@ -22,9 +23,9 @@ class UserController extends Controller
 
         return inertia('dashboard', [
             'events' => $events,
+            'canregister' => Features::enabled((Features::registration())),
         ]);
     }
-
     public function show(Event $event)
     {
         abort_if($event->status !== 'published', 404);
