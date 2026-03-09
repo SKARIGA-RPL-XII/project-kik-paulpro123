@@ -43,4 +43,8 @@ class UserController extends Controller
             'event' => $event,
         ]);
     }
+    public function events()
+{
+    return $this->index();
+}
 }

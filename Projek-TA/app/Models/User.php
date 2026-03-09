@@ -82,7 +82,11 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
     public function parentUser()
-{
-    return $this->belongsTo(User::class, 'parent_user_id');
-}
+    {
+        return $this->belongsTo(User::class, 'parent_user_id');
+    }
+    public function customerDetail()
+    {
+        return $this->hasOne(CustomerDetail::class);
+    }
 }

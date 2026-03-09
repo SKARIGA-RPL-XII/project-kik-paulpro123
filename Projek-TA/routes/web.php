@@ -3,7 +3,10 @@ use App\Http\Controllers\Eo\RegisterEOController;
 use App\Http\Controllers\Eo\EventController;
 use App\Http\Controllers\Eo\TicketController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\User\CheckoutController;
+use App\Http\Controllers\User\SummaryController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\User\PaymentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,19 +45,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('user/ticket_event');
     })->name('tickets');
 
-    Route::get('/events', [UserController::class, 'events'])
-        ->name('user.events');
-
     Route::get('/events/{event}', [UserController::class, 'show'])
         ->name('user.events.show');
 
-    Route::get('/checkout/{ticket}', function (\App\Models\Ticket $ticket) {
-        return Inertia::render('user/checkout', [
-            'ticket' => $ticket->load('event'),
-        ]);
+    Route::prefix('checkout')->group(function () {
 
-        Route::post('/order', [App\Http\Controllers\User\OrderController::class, 'store']);
+        Route::get('/customer', [CheckoutController::class, 'customer']);
+        Route::post('/customer', [CheckoutController::class, 'storeCustomer']);
+        Route::get('/summary', [SummaryController::class, 'summary']);
     });
+
+    Route::post('/checkout', [CheckoutController::class, 'checkout']);
+
+    Route::post('/checkout/create-order', [CheckoutController::class, 'createOrder']);
+
+    Route::get('/checkout/payment/{id}', [PaymentController::class, 'paymentPage']);
+    Route::post('/checkout/verify-payment', [PaymentController::class, 'verify']);
+
+    Route::get('/checkout/success', [PaymentController::class, 'success']);
+    Route::get('/checkout/failed', [PaymentController::class, 'failed']);
+
 
     // Register EO Routes
     Route::get('/register/eo', function () {

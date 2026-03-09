@@ -22,7 +22,7 @@ export default function Dashboard() {
         <AppLayout>
             <Head title="Dashboard" />
 
-            <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+            <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-gray-200 to-indigo-50">
                 <div className="mx-auto max-w-7xl px-6 py-12">
                     {/* Hero Section with Search */}
                     <div className="mb-12 text-center">

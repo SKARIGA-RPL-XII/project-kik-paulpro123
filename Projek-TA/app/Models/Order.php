@@ -7,10 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
-    'user_id',
-    'ticket_id',
-    'total_price',
-    'payment_method',
-    'status',
+        'invoice',
+        'user_id',
+        'event_id',
+        'qty',
+        'total_price',
+        'payment_method',
+        'payment_proof',
+        'status',
     ];
 }
