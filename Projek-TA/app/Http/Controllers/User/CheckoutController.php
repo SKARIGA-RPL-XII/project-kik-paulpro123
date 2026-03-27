@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\CustomerDetail;
 use App\Models\Ticket;
 use App\Models\Order;
+use App\Models\OrderItem;
 
 class CheckoutController extends Controller
 {
@@ -34,7 +35,6 @@ class CheckoutController extends Controller
 
         return redirect('/checkout/customer');
     }
-
     public function customer(Request $request)
     {
         return inertia('user/customer', [
@@ -43,8 +43,6 @@ class CheckoutController extends Controller
             'event_id' => $request->event_id,
         ]);
     }
-
-    // SAVE CUSTOMER
     public function storeCustomer(Request $request)
     {
         $request->validate([
@@ -75,18 +73,32 @@ class CheckoutController extends Controller
         return redirect('/checkout/summary');
     }
     public function createOrder(Request $request)
-{
-    $invoice = 'INV-' . date('Ymd') . '-' . rand(100,999);
+    {
+        $tickets = session('checkout_ticket');
 
-    $order = Order::create([
-        'invoice' => $invoice,
-        'event_id' => $request->event_id,
-        'user_id' => Auth::id(),
-        'total_price' => $request->total_price,
-        'payment_method' => $request->payment_method,
-        'status' => 'pending'
-    ]);
+        $event_id = $tickets[0]['event_id'];
 
-    return redirect('/checkout/payment/' . $order->id);
-}
+        $invoice = 'INV-' . date('Ymd') . '-' . rand(100, 999);
+
+        $order = Order::create([
+            'invoice' => $invoice,
+            'user_id' => Auth::id(),
+            'event_id' => $event_id,
+            'total_price' => $request->total_price,
+            'payment_method' => $request->payment_method,
+            'status' => 'pending'
+        ]);
+
+        foreach ($tickets as $ticket) {
+
+            OrderItem::create([
+                'order_id' => $order->id,
+                'ticket_id' => $ticket['id'],
+                'qty' => $ticket['qty'],
+                'price' => $ticket['price']
+            ]);
+        }
+
+        return redirect('/checkout/payment/' . $order->id);
+    }
 }

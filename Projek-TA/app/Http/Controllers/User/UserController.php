@@ -3,6 +3,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\EoPaymentMethod;
 use Laravel\Fortify\Features;
 
 class UserController extends Controller
@@ -39,12 +40,15 @@ class UserController extends Controller
             }
         ]);
 
+        $isPaymentReady = EoPaymentMethod::where('user_id', $event->eo_id)->exists();
+
         return inertia('user/detail_event', [
             'event' => $event,
+            'is_payment_ready' => $isPaymentReady,
         ]);
     }
     public function events()
-{
-    return $this->index();
-}
+    {
+        return $this->index();
+    }
 }

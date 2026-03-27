@@ -26,7 +26,11 @@ interface Event {
 }
 
 export default function EventDetail() {
-    const { event } = usePage<{ event: Event }>().props;
+    // TAMBAHAN: Tangkap is_payment_ready dari Controller
+    const { event, is_payment_ready } = usePage<{
+        event: Event;
+        is_payment_ready: boolean;
+    }>().props;
     const [current, setCurrent] = useState(0);
     const [qty, setQty] = useState<Record<number, number>>({});
 
@@ -335,9 +339,10 @@ export default function EventDetail() {
                                     </span>
                                 </div>
 
+                                {/* TAMBAHAN: Logika Disable Tombol Checkout */}
                                 <button
                                     type="button"
-                                    disabled={total === 0}
+                                    disabled={total === 0 || !is_payment_ready}
                                     onClick={() => {
                                         const selectedTickets = event.tickets
                                             .filter((t) => (qty[t.id] ?? 0) > 0)
@@ -354,10 +359,21 @@ export default function EventDetail() {
                                             });
                                         }
                                     }}
-                                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#2db3a6] py-3.5 text-xs font-bold text-white transition-all hover:bg-[#259e92] disabled:cursor-not-allowed disabled:bg-neutral-200"
+                                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#2db3a6] py-3.5 text-xs font-bold text-white transition-all hover:bg-[#259e92] disabled:cursor-not-allowed disabled:bg-neutral-300"
                                 >
                                     Lanjutkan
                                 </button>
+
+                                {/* TAMBAHAN: Teks Peringatan */}
+                                {!is_payment_ready && (
+                                    <div className="mt-3 rounded-lg border border-red-100 bg-red-50 p-2.5 text-center">
+                                        <span className="block text-[10px] leading-tight font-bold text-red-500">
+                                            ⚠️ Penyelenggara belum mengatur
+                                            metode pembayaran. Tiket tidak dapat
+                                            dibeli.
+                                        </span>
+                                    </div>
+                                )}
                             </div>
 
                             <Link

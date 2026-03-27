@@ -22,11 +22,11 @@ export default function Dashboard() {
         <AppLayout>
             <Head title="Dashboard" />
 
-            <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-gray-200 to-indigo-50">
+            <div className="min-h-screen w-full bg-linear-to-br from-slate-50 via-gray-200 to-indigo-50">
                 <div className="mx-auto max-w-7xl px-6 py-12">
                     {/* Hero Section with Search */}
                     <div className="mb-12 text-center">
-                        <h1 className="mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-4xl font-bold text-transparent">
+                        <h1 className="mb-3 bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-4xl font-bold text-transparent">
                             Temukan Event Terbaik
                         </h1>
                         <p className="mb-8 text-gray-600">

@@ -320,7 +320,7 @@ export default function ManageTicket() {
                                                 <div className="flex flex-col items-center gap-1">
                                                     <div className="h-2 w-24 overflow-hidden rounded-full bg-slate-200">
                                                         <div
-                                                            className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all"
+                                                            className="h-full rounded-full bg-linear-to-r from-blue-500 to-indigo-600 transition-all"
                                                             style={{
                                                                 width: `${Math.min(soldPercentage, 100)}%`,
                                                             }}

@@ -108,7 +108,7 @@ export default function AccountApproval({
                 {/* EO Info */}
                 <div className="flex-1 space-y-3">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-100">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-indigo-100">
                       <Building2 className="h-6 w-6 text-indigo-600" />
                     </div>
                     <div className="flex-1">

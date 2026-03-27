@@ -89,4 +89,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(CustomerDetail::class);
     }
+    public function eoPaymentMethods()
+    {
+        return $this->hasMany(EoPaymentMethod::class);
+    }
 }

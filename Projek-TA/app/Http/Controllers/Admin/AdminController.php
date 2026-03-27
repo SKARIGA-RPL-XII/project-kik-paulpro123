@@ -59,20 +59,23 @@ class AdminController extends Controller
     }
     public function publish(Event $event)
     {
-        $event->update([
-            'status' => 'published',
-        ]);
+        if ($event->tickets()->count() === 0) {
+            return back()->withErrors(['error' => 'Gagal! Event ini belum memiliki tiket yang dibuat oleh EO.']);
+        }
 
-        return inertia::location(url()->previous());
+        $event->update(['status' => 'published']);
+        return back()->with('success', 'Event berhasil dipublish!');
     }
-    public function reject(Event $event){
-    $event->update(['status' => 'rejected']); 
+    public function reject(Event $event)
+    {
+        $event->update(['status' => 'rejected']);
 
-    return inertia::location(url()->previous());
+        return back()->with('error', 'Event ditolak');
     }
     public function eventApproval()
     {
         $events = Event::with('eo')
+            ->where('status', 'draft')
             ->latest()
             ->get();
 

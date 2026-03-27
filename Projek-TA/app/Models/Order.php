@@ -16,4 +16,20 @@ class Order extends Model
         'payment_proof',
         'status',
     ];
+
+    // Tambahan relasi user untuk mengatasi error
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+    
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }

@@ -32,6 +32,14 @@ const BANK_INITIALS: Record<string, string> = {
 };
 
 function PaymentBadge({ method }: { method: string }) {
+    if (method === 'eo_manual') {
+        return (
+            <span className="inline-flex h-7 items-center rounded-lg bg-gray-700 px-2.5 text-xs font-bold text-white">
+                MANUAL
+            </span>
+        );
+    }
+
     const color =
         [...PAYMENT_OPTIONS.va, ...PAYMENT_OPTIONS.ewallet].find(
             (p) => p.id === method,
@@ -54,8 +62,9 @@ export default function Summary() {
     const customer = pageProps.customer ?? {};
     const event = pageProps.event ?? {};
 
+    const eoPaymentMethods = pageProps.eo_payment_methods ?? [];
+
     const [paymentMethod, setPaymentMethod] = useState('');
-    const [paymentType, setPaymentType] = useState('');
     const [showModal, setShowModal] = useState(false);
 
     const subtotal =
@@ -66,7 +75,6 @@ export default function Summary() {
 
     const closeModal = () => {
         setShowModal(false);
-        setPaymentType('');
     };
 
     function processPayment() {
@@ -82,6 +90,14 @@ export default function Summary() {
             tickets: ticket,
         });
     }
+
+    const getPaymentLabel = (method: string) => {
+        const found = [...PAYMENT_OPTIONS.va, ...PAYMENT_OPTIONS.ewallet].find(
+            (p) => p.id === method,
+        );
+        return found?.label;
+    };
+
     return (
         <AppLayout>
             <div className="min-h-screen bg-white p-6">
@@ -244,13 +260,7 @@ export default function Summary() {
                             {paymentMethod ? (
                                 <span className="flex items-center gap-2.5 font-medium text-gray-900">
                                     <PaymentBadge method={paymentMethod} />
-                                    {
-                                        [
-                                            ...PAYMENT_OPTIONS.va,
-                                            ...PAYMENT_OPTIONS.ewallet,
-                                        ].find((p) => p.id === paymentMethod)
-                                            ?.label
-                                    }
+                                    {getPaymentLabel(paymentMethod)}
                                 </span>
                             ) : (
                                 <span className="text-gray-400">
@@ -331,12 +341,14 @@ export default function Summary() {
                     </button>
                 </div>
             </div>
+
             <PaymentModal
                 show={showModal}
                 paymentMethod={paymentMethod}
                 setPaymentMethod={setPaymentMethod}
                 closeModal={closeModal}
-            />{' '}
+                eoPaymentMethods={eoPaymentMethods}
+            />
         </AppLayout>
     );
 }

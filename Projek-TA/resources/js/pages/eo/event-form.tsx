@@ -124,11 +124,11 @@ export default function EventForm() {
         <EOLayout>
             <Head title={isEdit ? 'Edit Event' : 'Create Event'} />
 
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50/50 p-6 md:p-10">
+            <div className="bg-liniear-to-br min-h-screen from-slate-50 via-white to-slate-50/50 p-6 md:p-10">
                 {/* HEADER */}
                 <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                     <div className="space-y-1.5">
-                        <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold tracking-tight text-transparent">
+                        <h1 className="bg-liniear-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold tracking-tight text-transparent">
                             {isEdit ? 'Edit Event' : 'Create New Event'}
                         </h1>
                         <p className="text-sm font-medium text-slate-500">
@@ -198,7 +198,7 @@ export default function EventForm() {
                             {/* Upload Button */}
                             {previews.length < 3 && (
                                 <label className="group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/50 p-12 transition-all duration-300 hover:border-slate-400 hover:bg-slate-100/50">
-                                    <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50 shadow-md transition-transform group-hover:scale-110">
+                                    <div className="bg-liniear-to-br mb-4 flex h-20 w-20 items-center justify-center rounded-2xl from-slate-100 to-slate-50 shadow-md transition-transform group-hover:scale-110">
                                         <Upload className="h-10 w-10 text-slate-400" />
                                     </div>
                                     <p className="mb-2 text-sm font-semibold text-slate-700">
@@ -330,12 +330,12 @@ export default function EventForm() {
                         {/* SUBMIT */}
                         <button
                             type="submit"
-                            className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 px-8 py-4 text-sm font-bold text-white shadow-xl shadow-slate-900/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-slate-900/40 active:scale-[0.98]"
+                            className="group bg-liniear-to-r relative w-full overflow-hidden rounded-2xl from-slate-900 to-slate-800 px-8 py-4 text-sm font-bold text-white shadow-xl shadow-slate-900/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-slate-900/40 active:scale-[0.98]"
                         >
                             <span className="relative z-10">
                                 {isEdit ? 'Update Event' : 'Create Event'}
                             </span>
-                            <div className="absolute inset-0 -z-0 bg-gradient-to-r from-slate-800 to-slate-700 opacity-0 transition-opacity group-hover:opacity-100" />
+                            <div className="bg-liniear-to-r absolute inset-0 z-0 from-slate-800 to-slate-700 opacity-0 transition-opacity group-hover:opacity-100" />
                         </button>
                     </form>
                 </div>

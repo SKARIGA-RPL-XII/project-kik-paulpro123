@@ -51,11 +51,11 @@ export default function ManageEvent() {
         <EOLayout>
             <Head title="Kelola Event" />
 
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50/50 p-6 md:p-10">
+            <div className="min-h-screen bg-liniear-to-br from-slate-50 via-white to-slate-50/50 p-6 md:p-10">
                 {/* HEADER */}
                 <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                     <div className="space-y-1.5">
-                        <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold tracking-tight text-transparent">
+                        <h1 className="bg-liniear-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold tracking-tight text-transparent">
                             Event Management
                         </h1>
                         <p className="text-sm font-medium text-slate-500">
@@ -65,7 +65,7 @@ export default function ManageEvent() {
 
                     <button
                         onClick={() => router.get('/eo/manage-event/create')}
-                        className="group inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-slate-900/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-slate-900/30 active:scale-[0.98]"
+                        className="group inline-flex items-center justify-center gap-2.5 rounded-2xl bg-liniear-to-r from-slate-900 to-slate-800 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-slate-900/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-slate-900/30 active:scale-[0.98]"
                     >
                         <Plus className="h-4.5 w-4.5 transition-transform group-hover:rotate-90" />
                         Create New Event
@@ -75,7 +75,7 @@ export default function ManageEvent() {
                 {/* EMPTY STATE */}
                 {events.length === 0 ? (
                     <div className="rounded-3xl border border-slate-200/60 bg-white/80 p-20 text-center shadow-sm backdrop-blur-sm">
-                        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50">
+                        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-liniear-to-br from-slate-100 to-slate-50">
                             <Calendar className="h-10 w-10 text-slate-400" />
                         </div>
                         <h3 className="mb-2 text-xl font-semibold text-slate-800">
@@ -134,11 +134,11 @@ export default function ManageEvent() {
                                                     className={`inline-flex shrink-0 items-center rounded-full px-3.5 py-1.5 text-xs font-bold tracking-wide uppercase shadow-sm ${
                                                         event.status ===
                                                         'published'
-                                                            ? 'bg-gradient-to-r from-emerald-50 to-emerald-100/80 text-emerald-700 ring-1 ring-emerald-200/50'
+                                                            ? 'bg-liniear-to-r from-emerald-50 to-emerald-100/80 text-emerald-700 ring-1 ring-emerald-200/50'
                                                             : event.status ===
                                                                 'rejected'
-                                                              ? 'bg-gradient-to-r from-red-50 to-red-100/80 text-red-700 ring-1 ring-red-200/50'
-                                                              : 'bg-gradient-to-r from-amber-50 to-amber-100/80 text-amber-700 ring-1 ring-amber-200/50'
+                                                              ? 'bg-liniear-to-r from-red-50 to-red-100/80 text-red-700 ring-1 ring-red-200/50'
+                                                              : 'bg-liniear-to-r from-amber-50 to-amber-100/80 text-amber-700 ring-1 ring-amber-200/50'
                                                     }`}
                                                 >
                                                     {event.status}

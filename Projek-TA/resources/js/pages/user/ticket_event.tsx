@@ -1,72 +1,65 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage, Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 
-type Ticket = {
-  id: number;
-  title: string;
-  date: string;
-  location: string;
-  status: 'Paid' | 'Unpaid';
-};
-
 export default function TicketPage() {
-  const tickets: Ticket[] = [
-    {
-      id: 1,
-      title: 'TECHNOFEST 7.0',
-      date: '15 Nov 2025 • 02:00',
-      location: 'Stadion Maguwoharjo, Sleman',
-      status: 'Paid',
-    },
-    {
-      id: 2,
-      title: 'HIPHOP NIGHT Yogyakarta',
-      date: '29 Nov 2025 • 21:00',
-      location: 'JNM, Yogyakarta',
-      status: 'Unpaid',
-    },
-  ];
+    const { orders } = usePage().props as any;
 
- return (
-  <AppLayout>
-    <Head title="My Tickets" />
+    return (
+        <AppLayout>
+            {' '}
+            <Head title="My Tickets" />
+            <div className="min-h-screen bg-white">
+                <div className="mx-auto max-w-5xl space-y-6 p-4 pb-20">
+                    <h1 className="text-2xl font-semibold">My Tickets</h1>
 
-    <div className="min-h-screen bg-white">
-      <div className="mx-auto max-w-5xl space-y-6 p-4 pb-20">
-        <h1 className="text-2xl font-semibold">My Tickets</h1>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        {orders.map((order: any) =>
+                            order.order_items.map((item: any) => (
+                                <div
+                                    key={item.id}
+                                    className="rounded-xl border bg-white p-4 shadow-sm"
+                                >
+                                    {/* EVENT NAME */}
+                                    <h2 className="text-lg font-semibold text-neutral-900">
+                                        {order.event?.title}
+                                    </h2>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {tickets.map((ticket) => (
-            <div
-              key={ticket.id}
-              className="rounded-xl border bg-white p-4 shadow-sm">
-              <h2 className="text-lg font-semibold text-neutral-900">{ticket.title}</h2>
+                                    {/* TICKET NAME */}
+                                    <p className="mt-1 text-sm font-medium text-teal-600">
+                                        🎟 {item.ticket?.name}
+                                    </p>
 
-              <div className="mt-2 text-sm text-neutral-600">
-                <p>📅 {ticket.date}</p>
-                <p>📍 {ticket.location}</p>
-              </div>
+                                    {/* EVENT INFO */}
+                                    <div className="mt-2 text-sm text-neutral-600">
+                                        <p>📅 {order.event?.date}</p>
+                                        <p>📍 {order.event?.location}</p>
+                                    </div>
 
-              <div className="mt-4 flex items-center justify-between">
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-medium ${
-                    ticket.status === 'Paid'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-yellow-100 text-yellow-700'
-                  }`}
-                >
-                  {ticket.status}
-                </span>
+                                    {/* STATUS + ACTION */}
+                                    <div className="mt-4 flex items-center justify-between">
+                                        <span
+                                            className={`rounded-full px-3 py-1 text-xs font-medium ${
+                                                order.status === 'paid'
+                                                    ? 'bg-green-100 text-green-700'
+                                                    : 'bg-yellow-100 text-yellow-700'
+                                            }`}
+                                        >
+                                            {order.status}
+                                        </span>
 
-                <button className="text-sm font-semibold text-neutral-800 hover:underline hover:text-black">
-                  View Detail
-                </button>
-              </div>
+                                        <Link
+                                            href={`/tickets/${item.id}`}
+                                            className="text-sm font-semibold text-neutral-800 hover:text-black hover:underline"
+                                        >
+                                            View Detail
+                                        </Link>
+                                    </div>
+                                </div>
+                            )),
+                        )}
+                    </div>
+                </div>
             </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </AppLayout>
-);
+        </AppLayout>
+    );
 }

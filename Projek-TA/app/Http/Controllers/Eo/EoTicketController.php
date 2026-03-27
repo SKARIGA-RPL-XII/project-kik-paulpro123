@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-class TicketController extends Controller
+class EoTicketController extends Controller
 {
     public function index(Event $event)
     {

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\CustomerDetail;
 use App\Models\Event;
+use App\Models\User; // TAMBAHAN: Jangan lupa import model User
 
 class SummaryController extends Controller
 {
@@ -33,10 +34,13 @@ class SummaryController extends Controller
             'image' => optional($eventModel->images->first())->image
         ];
 
+        $eo = User::with('eoPaymentMethods')->find($eventModel->eo_id);
+
         return inertia('user/summary', [
             'ticket' => $ticket,
             'customer' => $customer,
-            'event' => $event
+            'event' => $event,
+            'eo_payment_methods' => $eo->eoPaymentMethods 
         ]);
     }
 }
