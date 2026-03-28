@@ -17,42 +17,64 @@ import {
 
 export default function EODashboard({
     status,
-    has_payment_method, // TAMBAHAN: Menerima prop pengecekan metode pembayaran
+    has_payment_method,
+    // 1. TAMBAHAN: Terima data dinamis dari Controller
+    total_events = 0,
+    tickets_sold = 0,
+    total_revenue = 0,
 }: {
     status: string;
     has_payment_method: boolean;
+    total_events: number;
+    tickets_sold: number;
+    total_revenue: number;
 }) {
+    // 2. TAMBAHAN: Fungsi pembuat format Rupiah
+    const formatCurrency = (amount: number) => {
+        if (amount >= 1000000) {
+            // Jika lebih dari 1 juta, format jadi "Rp 1,5 Jt" agar lebih ringkas di dashboard
+            return `Rp ${(amount / 1000000).toLocaleString('id-ID')} Jt`;
+        }
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+        }).format(amount);
+    };
+
+    // 3. UBAH DATA STATIS MENJADI DINAMIS
     const stats = [
         {
             title: 'Total Event',
-            value: '12',
-            change: '+3 bulan ini',
+            value: total_events.toString(), // Angka dari database
+            change: 'Event terdaftar',
             icon: Calendar,
             color: 'blue',
         },
         {
             title: 'Tiket Terjual',
-            value: '3,847',
-            change: '+23.5% dari target',
+            value: tickets_sold.toLocaleString('id-ID'), // Angka dari database (format ribuan)
+            change: 'Tiket berhasil dibayar',
             icon: Ticket,
             color: 'green',
         },
         {
             title: 'Total Pendapatan',
-            value: 'Rp 125jt',
-            change: '+18.2% bulan ini',
+            value: formatCurrency(total_revenue), // Angka dari database (format Rupiah)
+            change: 'Dari tiket terjual',
             icon: DollarSign,
             color: 'purple',
         },
         {
             title: 'Total Pengunjung',
-            value: '4,521',
+            value: '4,521', // Ini biarkan statis dulu atau bisa disamakan dengan tiket terjual
             change: '+892 minggu ini',
             icon: Users,
             color: 'orange',
         },
     ];
 
+    // ... KODE UPCOMING EVENTS & RECENT ACTIVITIES TETAP SAMA ...
     const upcomingEvents = [
         {
             id: 1,
@@ -128,6 +150,7 @@ export default function EODashboard({
         }
     };
 
+    // ... KODE RENDER JSX TETAP SAMA PERSIS SEPERTI MILIK ANDA ...
     return (
         <EOLayout title="Dashboard Event Organizer">
             <Head title="Dashboard EO" />
@@ -229,7 +252,7 @@ export default function EODashboard({
             ) : (
                 <div className="bg-liniear-to-br min-h-screen from-slate-50 via-blue-50 to-indigo-50 p-6 lg:p-8">
                     <div className="mx-auto max-w-7xl space-y-8">
-                        {/* TAMBAHAN: BANNER PERINGATAN METODE PEMBAYARAN */}
+                        {/* BANNER PERINGATAN METODE PEMBAYARAN */}
                         {!has_payment_method && (
                             <div className="flex animate-pulse flex-col items-center justify-between gap-4 rounded-xl border border-red-200 bg-red-50 p-5 shadow-sm sm:flex-row">
                                 <div className="flex items-start gap-3">
@@ -249,7 +272,7 @@ export default function EODashboard({
                                     </div>
                                 </div>
                                 <Link
-                                    href="/eo/payment-method"
+                                    href="/eo/payment-methods"
                                     className="shrink-0 rounded-lg bg-red-600 px-5 py-2.5 text-sm font-bold whitespace-nowrap text-white shadow-sm transition hover:bg-red-700"
                                 >
                                     Atur Sekarang
@@ -270,10 +293,10 @@ export default function EODashboard({
                                     </p>
                                 </div>
                                 <div className="hidden sm:block">
-                                    <button className="flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-indigo-700">
+                                    <Link href="/eo/manage-event/create" className="flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-indigo-700">
                                         <Plus className="h-5 w-5" />
                                         Buat Event Baru
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
@@ -322,9 +345,9 @@ export default function EODashboard({
                                                     Event Mendatang
                                                 </h3>
                                             </div>
-                                            <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                                            <Link href="/eo/manage-event" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
                                                 Lihat Semua
-                                            </button>
+                                            </Link>
                                         </div>
                                     </div>
                                     <div className="p-6">
@@ -412,14 +435,14 @@ export default function EODashboard({
                                                     </div>
 
                                                     <div className="mt-4 flex gap-2">
-                                                        <button className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-300 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50">
+                                                        <Link href={`/event/${event.id}`} className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-300 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50">
                                                             <Eye className="h-4 w-4" />
                                                             Detail
-                                                        </button>
-                                                        <button className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-300 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50">
+                                                        </Link>
+                                                        <Link href={`/eo/manage-event/${event.id}/edit`} className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-300 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50">
                                                             <Edit className="h-4 w-4" />
                                                             Edit
-                                                        </button>
+                                                        </Link>
                                                     </div>
                                                 </div>
                                             ))}
@@ -478,22 +501,22 @@ export default function EODashboard({
                                         Quick Actions
                                     </h3>
                                     <div className="space-y-2">
-                                        <button className="flex w-full items-center gap-3 rounded-lg border-2 border-dashed border-slate-300 p-3 text-left transition-all hover:border-indigo-500 hover:bg-indigo-50">
+                                        <Link href="/eo/reports" className="flex w-full items-center gap-3 rounded-lg border-2 border-dashed border-slate-300 p-3 text-left transition-all hover:border-indigo-500 hover:bg-indigo-50">
                                             <div className="rounded-lg bg-blue-100 p-2">
                                                 <BarChart3 className="h-4 w-4 text-blue-600" />
                                             </div>
                                             <span className="text-sm font-medium text-slate-700">
                                                 Lihat Laporan
                                             </span>
-                                        </button>
-                                        <button className="flex w-full items-center gap-3 rounded-lg border-2 border-dashed border-slate-300 p-3 text-left transition-all hover:border-indigo-500 hover:bg-indigo-50">
+                                        </Link>
+                                        <Link href="/eo/manage-event" className="flex w-full items-center gap-3 rounded-lg border-2 border-dashed border-slate-300 p-3 text-left transition-all hover:border-indigo-500 hover:bg-indigo-50">
                                             <div className="rounded-lg bg-green-100 p-2">
                                                 <Ticket className="h-4 w-4 text-green-600" />
                                             </div>
                                             <span className="text-sm font-medium text-slate-700">
                                                 Kelola Tiket
                                             </span>
-                                        </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>

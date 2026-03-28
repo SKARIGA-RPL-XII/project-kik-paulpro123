@@ -3,14 +3,18 @@ import { usePage, router } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Payment() {
-    const { order, event } = usePage().props as any;
+    // TAMBAHAN: Menangkap payment_info dari Controller
+    const { order, event, payment_info } = usePage().props as any;
 
     const [file, setFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
 
-    const REKENING = '1234567890';
+    // MENGGUNAKAN DATA DINAMIS DARI DATABASE
+    const REKENING =
+        payment_info?.account_number ?? '-';
+    const ATAS_NAMA = payment_info?.account_name ?? '-';
 
     function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
         const f = e.target.files?.[0] ?? null;
@@ -20,7 +24,8 @@ export default function Payment() {
     }
 
     function copyRekening() {
-        navigator.clipboard.writeText(REKENING);
+        if (!payment_info?.account_number) return;
+        navigator.clipboard.writeText(payment_info.account_number);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     }
@@ -34,6 +39,7 @@ export default function Payment() {
         const formData = new FormData();
         formData.append('order_id', order.id);
         formData.append('payment_proof', file);
+
         router.post('/checkout/verify-payment', formData, {
             forceFormData: true,
             onFinish: () => setLoading(false),
@@ -80,7 +86,7 @@ export default function Payment() {
                         <div>
                             <p className="mb-1 text-xs font-semibold tracking-widest text-gray-400 uppercase">
                                 Total Pembayaran
-                            </p>    
+                            </p>
                             <p className="text-2xl font-bold text-teal-600">
                                 Rp {order.total_price.toLocaleString()}
                             </p>
@@ -96,18 +102,22 @@ export default function Payment() {
                         </div>
                     </div>
 
-                    {/* ── REKENING TUJUAN ── */}
+                    {/* ── REKENING TUJUAN DINAMIS ── */}
                     <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
                         <p className="mb-3 text-xs font-semibold tracking-widest text-gray-400 uppercase">
-                            Rekening Tujuan
+                            Transfer ke Rekening Berikut
                         </p>
-                        <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3">
+                        <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
                             <div>
+                                {/* Logo/Nama Bank */}
+                                <p className="mb-1 text-xs font-bold text-teal-600">
+                                    {order.payment_method}
+                                </p>
                                 <p className="font-mono text-lg font-bold tracking-widest text-gray-900">
                                     {REKENING}
                                 </p>
-                                <p className="mt-0.5 text-xs text-gray-500">
-                                    a.n Event Organizer
+                                <p className="mt-0.5 text-xs font-medium text-gray-500 uppercase">
+                                    a.n {ATAS_NAMA}
                                 </p>
                             </div>
                             <button
@@ -171,7 +181,6 @@ export default function Payment() {
                             Upload Bukti Pembayaran
                         </p>
 
-                        {/* Drop zone */}
                         <label
                             className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-6 transition ${
                                 file
@@ -244,7 +253,7 @@ export default function Payment() {
                         {loading ? (
                             <>
                                 <svg
-                                    className="h-4 w-4 animate-spin"
+                                    className="h-4 w-4 animate-spin text-white"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                 >
@@ -259,7 +268,7 @@ export default function Payment() {
                                     <path
                                         className="opacity-75"
                                         fill="currentColor"
-                                        d="M4 12a8 8 0 018-8v4l3-3-3-3V4a10 10 0 100 20v-4l-3 3 3 3v-2a8 8 0 01-8-8z"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                                     />
                                 </svg>
                                 Memverifikasi...

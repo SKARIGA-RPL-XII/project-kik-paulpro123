@@ -17,7 +17,6 @@ class Order extends Model
         'status',
     ];
 
-    // Tambahan relasi user untuk mengatasi error
     public function user()
     {
         return $this->belongsTo(User::class);

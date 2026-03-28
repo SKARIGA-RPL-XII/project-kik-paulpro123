@@ -25,7 +25,6 @@ export default function ManageTicket() {
     const { event } = usePage<{ event: Event }>().props;
 
     const [form, setForm] = useState({
-        
         name: '',
         price: '',
         kuota: '',
@@ -45,7 +44,7 @@ export default function ManageTicket() {
                 onSuccess: () => {
                     setForm({ name: '', price: '', kuota: '' });
                 },
-            },
+            }
         );
     };
 
@@ -103,11 +102,11 @@ export default function ManageTicket() {
                     </Button>
                 </div>
 
-                {/* Stats Cards */}
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {/* Stats Cards - PERUBAHAN DI SINI (Ditambah Sisa Tiket) */}
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                     <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
                         <div className="text-sm font-medium text-slate-500">
-                            Total Ticket
+                            Total Jenis Ticket
                         </div>
                         <div className="mt-2 text-3xl font-bold text-slate-900">
                             {event.tickets.length}
@@ -119,11 +118,16 @@ export default function ManageTicket() {
                             Ticket Aktif
                         </div>
                         <div className="mt-2 text-3xl font-bold text-green-600">
-                            {
-                                event.tickets.filter(
-                                    (t) => t.status === 'active',
-                                ).length
-                            }
+                            {event.tickets.filter((t) => t.status === 'active').length}
+                        </div>
+                    </div>
+
+                    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+                        <div className="text-sm font-medium text-slate-500">
+                            Kapasitas Total (Kuota)
+                        </div>
+                        <div className="mt-2 text-3xl font-bold text-indigo-600">
+                            {event.tickets.reduce((acc, t) => acc + t.kuota, 0)}
                         </div>
                     </div>
 
@@ -132,22 +136,17 @@ export default function ManageTicket() {
                             Total Terjual
                         </div>
                         <div className="mt-2 text-3xl font-bold text-blue-600">
-                            {event.tickets.reduce(
-                                (acc, t) => acc + t.sold,
-                                0,
-                            )}
+                            {event.tickets.reduce((acc, t) => acc + t.sold, 0)}
                         </div>
                     </div>
 
-                    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
-                        <div className="text-sm font-medium text-slate-500">
-                            Total Kuota
+                    {/* KOTAK BARU: Sisa Tiket */}
+                    <div className="rounded-xl border border-orange-200 bg-orange-50 p-6 shadow-sm transition-shadow hover:shadow-md">
+                        <div className="text-sm font-medium text-orange-600">
+                            Sisa Tiket Tersedia
                         </div>
-                        <div className="mt-2 text-3xl font-bold text-indigo-600">
-                            {event.tickets.reduce(
-                                (acc, t) => acc + t.kuota,
-                                0,
-                            )}
+                        <div className="mt-2 text-3xl font-bold text-orange-600">
+                            {event.tickets.reduce((acc, t) => acc + (t.kuota - t.sold), 0)}
                         </div>
                     </div>
                 </div>
@@ -173,9 +172,7 @@ export default function ManageTicket() {
                             </Label>
                             <Input
                                 value={form.name}
-                                onChange={(e) =>
-                                    setForm({ ...form, name: e.target.value })
-                                }
+                                onChange={(e) => setForm({ ...form, name: e.target.value })}
                                 placeholder="Contoh: VIP, Regular, Early Bird"
                                 className="h-11 border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500"
                                 required
@@ -190,9 +187,7 @@ export default function ManageTicket() {
                                 type="number"
                                 min={0}
                                 value={form.price}
-                                onChange={(e) =>
-                                    setForm({ ...form, price: e.target.value })
-                                }
+                                onChange={(e) => setForm({ ...form, price: e.target.value })}
                                 placeholder="0"
                                 className="h-11 border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500"
                                 required
@@ -201,15 +196,13 @@ export default function ManageTicket() {
 
                         <div className="space-y-2">
                             <Label className="text-sm font-medium text-slate-700">
-                                Kuota
+                                Kuota (Kapasitas Awal)
                             </Label>
                             <Input
                                 type="number"
                                 min={1}
                                 value={form.kuota}
-                                onChange={(e) =>
-                                    setForm({ ...form, kuota: e.target.value })
-                                }
+                                onChange={(e) => setForm({ ...form, kuota: e.target.value })}
                                 placeholder="0"
                                 className="h-11 border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500"
                                 required
@@ -247,10 +240,14 @@ export default function ManageTicket() {
                                         Harga
                                     </th>
                                     <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-600">
-                                        Kuota
+                                        Kuota Awal
                                     </th>
                                     <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-600">
                                         Terjual
+                                    </th>
+                                    {/* KOLOM BARU: SISA */}
+                                    <th className="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-orange-600">
+                                        Sisa
                                     </th>
                                     <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-600">
                                         Progress
@@ -267,7 +264,7 @@ export default function ManageTicket() {
                                 {event.tickets.length === 0 && (
                                     <tr>
                                         <td
-                                            colSpan={7}
+                                            colSpan={8}
                                             className="px-6 py-12 text-center"
                                         >
                                             <div className="flex flex-col items-center justify-center gap-3">
@@ -287,8 +284,9 @@ export default function ManageTicket() {
                                 )}
 
                                 {event.tickets.map((ticket) => {
-                                    const soldPercentage =
-                                        (ticket.sold / ticket.kuota) * 100;
+                                    const soldPercentage = (ticket.sold / ticket.kuota) * 100;
+                                    const sisaTiket = ticket.kuota - ticket.sold; // Menghitung sisa tiket
+
                                     return (
                                         <tr
                                             key={ticket.id}
@@ -301,9 +299,7 @@ export default function ManageTicket() {
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <span className="font-semibold text-slate-900">
-                                                    {formatCurrency(
-                                                        ticket.price,
-                                                    )}
+                                                    {formatCurrency(ticket.price)}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-center">
@@ -314,6 +310,12 @@ export default function ManageTicket() {
                                             <td className="px-6 py-4 text-center">
                                                 <span className="font-semibold text-blue-600">
                                                     {ticket.sold}
+                                                </span>
+                                            </td>
+                                            {/* MENAMPILKAN SISA TIKET */}
+                                            <td className="px-6 py-4 text-center bg-orange-50/30">
+                                                <span className="font-bold text-orange-600">
+                                                    {sisaTiket}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
@@ -327,10 +329,7 @@ export default function ManageTicket() {
                                                         />
                                                     </div>
                                                     <span className="text-xs font-medium text-slate-600">
-                                                        {soldPercentage.toFixed(
-                                                            0,
-                                                        )}
-                                                        %
+                                                        {soldPercentage.toFixed(0)}%
                                                     </span>
                                                 </div>
                                             </td>
@@ -338,17 +337,13 @@ export default function ManageTicket() {
                                                 <Button
                                                     size="sm"
                                                     variant={
-                                                        ticket.status ===
-                                                        'active'
+                                                        ticket.status === 'active'
                                                             ? 'default'
                                                             : 'secondary'
                                                     }
-                                                    onClick={() =>
-                                                        toggleStatus(ticket)
-                                                    }
+                                                    onClick={() => toggleStatus(ticket)}
                                                     className={
-                                                        ticket.status ===
-                                                        'active'
+                                                        ticket.status === 'active'
                                                             ? 'bg-green-600 text-white hover:bg-green-700'
                                                             : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                                                     }
@@ -363,11 +358,7 @@ export default function ManageTicket() {
                                                     <Button
                                                         size="icon"
                                                         variant="destructive"
-                                                        onClick={() =>
-                                                            deleteTicket(
-                                                                ticket.id,
-                                                            )
-                                                        }
+                                                        onClick={() => deleteTicket(ticket.id)}
                                                         className="h-9 w-9 bg-red-600 text-white hover:bg-red-700"
                                                     >
                                                         <Trash2 size={16} />

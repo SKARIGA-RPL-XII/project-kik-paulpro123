@@ -3,6 +3,7 @@ use App\Http\Controllers\Eo\RegisterEOController;
 use App\Http\Controllers\Eo\EventController;
 use App\Http\Controllers\Eo\EoTicketController;
 use App\Http\Controllers\Eo\EoOrderController;
+use App\Http\Controllers\Eo\EoDashboardController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\PaymentProviderController;
 use App\Http\Controllers\User\CheckoutController;
@@ -62,15 +63,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::post('/checkout', [CheckoutController::class, 'checkout']);
-
     Route::post('/checkout/create-order', [CheckoutController::class, 'createOrder']);
-
     Route::get('/checkout/payment/{id}', [PaymentController::class, 'paymentPage']);
     Route::post('/checkout/verify-payment', [PaymentController::class, 'verify']);
-
     Route::get('/checkout/success', [PaymentController::class, 'success']);
-    Route::get('/checkout/failed', [PaymentController::class, 'failed']);
-
+    Route::get('/checkout/failed/{orderId}', [PaymentController::class, 'failed'])->name('checkout.failed');
 
     // Register EO Routes
     Route::get('/register/eo', function () {
@@ -87,13 +84,7 @@ Route::middleware(['auth', 'verified', 'role:eo'])
     ->name('eo.')
     ->group(function () {
 
-        Route::get('/dashboard', function () {
-            $hasPaymentMethod = \App\Models\EoPaymentMethod::where('user_id', Auth::id())->exists();
-
-            return Inertia::render('eo/dashboard', [
-                'has_payment_method' => $hasPaymentMethod
-            ]);
-        })->name('dashboard');
+        Route::get('/dashboard', [EoDashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/manage-event/create', function () {
             return Inertia::render('eo/event-form');

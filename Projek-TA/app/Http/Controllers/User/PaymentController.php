@@ -5,72 +5,70 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB; // TAMBAHAN: Untuk transaksi database aman
+use Illuminate\Support\Facades\DB;
 use App\Models\Event;
 use App\Models\Order;
-use App\Models\Ticket; // TAMBAHAN: Jika Anda butuh update stok tiket
+use App\Models\Ticket;
 use Inertia\Inertia;
-use Exception; // TAMBAHAN: Untuk menangkap error
+use Exception;
 
 class PaymentController extends Controller
 {
 
-    public function paymentPage($id)
+    public function paymentPage($orderId)
     {
-        $order = Order::findOrFail($id);
-        $event = Event::find($order->event_id);
+        $order = Order::findOrFail($orderId);
+        $event = Event::findOrFail($order->event_id);
+        $paymentInfo = \App\Models\EoPaymentMethod::where('user_id', $event->eo_id)
+            ->where('provider_name', $order->payment_method)
+            ->first();
 
         return Inertia::render('user/payment', [
             'order' => $order,
-            'event' => $event
+            'event' => $event,
+            'payment_info' => $paymentInfo
         ]);
     }
 
-    public function verify(Request $request)
+   public function verify(Request $request)
     {
-        // 1. Validasi hanya butuh order_id (Upload gambar ditiadakan)
         $request->validate([
-            'order_id' => 'required|exists:orders,id'
+            'order_id' => 'required|exists:orders,id',
+            'payment_proof' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
         ]);
 
         try {
-            // 2. Gunakan DB::transaction agar proses update status aman dari bentrok (Race Condition)
             DB::transaction(function () use ($request) {
-
+                
                 $order = Order::where('id', $request->order_id)
                     ->where('status', 'pending')
-                    ->lockForUpdate() // Kunci data pesanan sementara diproses
+                    ->lockForUpdate() 
                     ->firstOrFail();
 
-                // 3. SIMULASI OTOMATIS: Anggap uang sudah divalidasi oleh sistem
+                $path = $request->file('payment_proof')->store('payment_proofs', 'public');
+
+                $order->payment_proof = $path;
                 $order->status = 'success';
-                $order->payment_method = 'Simulated Auto-Transfer'; // Atau sesuaikan dengan nama method Anda
-                $order->payment_proof = null; // Kosongkan karena sudah tidak perlu bukti gambar
                 $order->save();
 
-                // 4. LOGIKA TAMBAH TIKET TERJUAL (Menggunakan tabel order_items)
-                $orderItems = DB::table('order_items') // Sesuaikan nama tabel Anda jika berbeda (misal: orders_item)
+                $orderItems = DB::table('order_items')
                     ->where('order_id', $order->id)
                     ->get();
 
                 foreach ($orderItems as $item) {
-                    // Kunci row tiket ini dan tambahkan jumlah 'sold' sesuai 'quantity' yang dibeli
                     $ticket = Ticket::where('id', $item->ticket_id)->lockForUpdate()->first();
-
                     if ($ticket) {
-                        $ticket->increment('sold', $item->quantity);
+                        $ticket->increment('sold', $item->qty); 
                     }
                 }
             });
 
-            // 5. Langsung lemparkan ke halaman sukses (tanpa delay/sleep)
             return redirect('/checkout/success');
 
         } catch (Exception $e) {
-            return redirect('/checkout/failed')->withErrors(['error' => 'Gagal memproses pembayaran.']);
+            return redirect('/checkout/failed/' . $request->order_id);
         }
     }
-
     public function success()
     {
         $order = Order::with('event')
@@ -86,6 +84,14 @@ class PaymentController extends Controller
 
     public function failed()
     {
-        return Inertia::render('user/failed');
+        $order = Order::with('event')
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->first();
+
+        return Inertia::render('user/failed', [
+            'order' => $order,
+            'event' => $order ? $order->event : null
+        ]);
     }
 }
