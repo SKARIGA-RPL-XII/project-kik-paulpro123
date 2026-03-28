@@ -12,13 +12,31 @@ class EoOrderController extends Controller
 {
     public function customerList()
     {
-        $orders = Order::with(['user', 'event'])
+        $orders = Order::with(['user.customerDetail', 'event'])
             ->whereHas('event', function ($query) {
                 $query->where('eo_id', Auth::id());
             })
             ->where('status', 'success')
             ->latest()
-            ->get();
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'invoice' => $order->invoice ?? 'INV-' . $order->id,
+                    'total_price' => $order->total_price,
+                    'payment_method' => $order->payment_method ?? 'Transfer/VA',
+                    'status' => $order->status,
+                    'created_at' => $order->created_at,
+                    'user' => [
+                        'username' => $order->user->name ?? '-',
+                        'email' => $order->user->email ?? '-',
+                        'full_name' => $order->user->customerDetail->full_name ?? 'Data belum diisi',
+                    ],
+                    'event' => [
+                        'title' => $order->event->title ?? '-',
+                    ],
+                ];
+            });
 
         return Inertia::render('eo/customer-list', [
             'orders' => $orders
@@ -95,5 +113,4 @@ class EoOrderController extends Controller
 
         return back()->with('success', 'Metode pembayaran dihapus.');
     }
-    // --- AKHIR BLOK PAYMENT METHODS ---}
 }

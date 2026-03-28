@@ -40,6 +40,12 @@ const menuItems = [
     href: "/admin/payment-providers",
     icon: CreditCard, 
   },
+   {
+    id: "transaction history",
+    label: "Riwayat Transaksi",
+    href: "/admin/transactions",
+    icon: FileText, 
+  },
   {
     id: "sales-report",
     label: "Laporan Penjualan",

@@ -29,7 +29,18 @@ class UserController extends Controller
     }
     public function show(Event $event)
     {
+        // 1. Pastikan event sudah di-publish
         abort_if($event->status !== 'published', 404);
+
+        // 2. LOGIKA PENCATATAN PENGUNJUNG (VIEWS)
+        // Buat kunci sesi unik berdasarkan ID event
+        $sessionKey = 'viewed_event_' . $event->id;
+
+        // Cek apakah di sesi browser ini user sudah pernah melihat event ini
+        if (!session()->has($sessionKey)) {
+            $event->increment('views'); // Tambah +1 di database
+            session()->put($sessionKey, true); // Tandai di sesi agar tidak dihitung ganda saat di-refresh
+        }
 
         $event->load([
             'images',

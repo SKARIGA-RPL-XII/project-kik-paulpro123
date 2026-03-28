@@ -5,7 +5,9 @@ use App\Http\Controllers\Eo\EoTicketController;
 use App\Http\Controllers\Eo\EoOrderController;
 use App\Http\Controllers\Eo\EoDashboardController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\PaymentProviderController;
+use App\Http\Controllers\Admin\AdminTransactionController;
 use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\User\SummaryController;
 use App\Http\Controllers\User\UserController;
@@ -137,9 +139,7 @@ Route::middleware(['auth', 'role:admin'])
     ->group(function () {
 
         // Dashboard Admin
-        Route::get('/dashboard', function () {
-            return Inertia::render('admin/dashboard');
-        })->name('dashboard');
+       Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         // Kelola Akun
         Route::get('/manage-akun', [AdminController::class, 'index'])
             ->name('accounts');
@@ -154,7 +154,6 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/eo/{eo}/reject', [AdminController::class, 'rejectEO'])
             ->name('eo.reject');
 
-        // Verfikasi Publish Event (Defaul: draft, Publish, Reject)
         Route::get('/event-approval', [AdminController::class, 'eventApproval'])
             ->name('events.index');
 
@@ -173,6 +172,8 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/payment-providers', [PaymentProviderController::class, 'store'])->name('payment-providers.store');
         Route::put('/payment-providers/{paymentProvider}', [PaymentProviderController::class, 'update'])->name('payment-providers.update');
         Route::delete('/payment-providers/{paymentProvider}', [PaymentProviderController::class, 'destroy'])->name('payment-providers.destroy');
+
+        Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('admin.transactions');
     });
 
 // Logout

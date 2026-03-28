@@ -19,14 +19,15 @@ class AdminController extends Controller
     }
     public function eoApproval()
     {
+        // Hapus filter pending agar React menerima SEMUA data EO
         $eoRequests = User::query()
             ->where('role', 'eo')
-            ->where('status', 'pending')
             ->latest()
             ->get()
             ->map(fn($eo) => [
                 'id' => $eo->id,
                 'company_name' => $eo->name,
+                'status' => $eo->status, // 👈 WAJIB DITAMBAHKAN UNTUK FILTER TAB
                 'user' => [
                     'name' => $eo->name,
                     'email' => $eo->email,
@@ -75,7 +76,6 @@ class AdminController extends Controller
     public function eventApproval()
     {
         $events = Event::with('eo')
-            ->where('status', 'draft')
             ->latest()
             ->get();
 
