@@ -42,24 +42,41 @@ class EoDashboardController extends Controller
             ->where('orders.status', 'success')
             ->sum('order_items.qty');
 
-        // 5. AMBIL EVENT MENDATANG (STATUS: PUBLISHED)
+        // 📊 5. LOGIKA CHART: Ambil Pendapatan 7 Hari Terakhir
+        $salesData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            // Mundur dari 6 hari yang lalu sampai hari ini
+            $date = Carbon::now()->subDays($i)->format('Y-m-d');
+            $displayDate = Carbon::now()->subDays($i)->format('d M'); // Cth: 12 Ags
+
+            $dailyRevenue = Order::whereHas('event', function ($q) use ($eoId) {
+                    $q->where('eo_id', $eoId);
+                })
+                ->where('status', 'success')
+                ->whereDate('updated_at', $date) // Ambil yang sukses di tanggal tersebut
+                ->sum('total_price');
+
+            $salesData[] = [
+                'date' => $displayDate,
+                'revenue' => (int) $dailyRevenue,
+            ];
+        }
+
+        // 6. AMBIL EVENT MENDATANG (STATUS: PUBLISHED)
         $upcomingEvents = Event::with('tickets')
             ->where('eo_id', $eoId)
-            ->where('status', 'published') // Hanya ambil yang published
-            ->latest() // Urutkan dari yang terbaru
-            ->take(3) // Ambil 3 event saja untuk di dashboard
+            ->where('status', 'published')
+            ->latest()
+            ->take(3)
             ->get()
             ->map(function ($event) {
-                // Hitung tiket terjual vs kapasitas untuk event ini
                 $ticketsTotal = $event->tickets->sum('kuota');
                 $ticketsSold = $event->tickets->sum('sold');
                 
-                // Hitung pendapatan khusus event ini
                 $revenue = Order::where('event_id', $event->id)
                     ->where('status', 'success')
                     ->sum('total_price');
 
-                // Format data agar persis seperti yang diminta React UI
                 return [
                     'id' => $event->id,
                     'title' => $event->title,
@@ -80,6 +97,7 @@ class EoDashboardController extends Controller
             'total_revenue' => $totalRevenue,
             'total_visitors' => $totalVisitors,
             'upcoming_events' => $upcomingEvents, 
+            'sales_data' => $salesData, // 👈 Lempar data grafik ke React
         ]);
     }
 }

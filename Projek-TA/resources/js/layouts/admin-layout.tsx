@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react"
 import AdminSidebar from "@/components/admin-sidebar"
 import AdminHeader from "@/components/admin-header"
-
+import AdminChatBot from "@/components/admin-chatbot"
 interface AdminLayoutProps extends PropsWithChildren {
   title?: string
 }
@@ -18,6 +18,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
           </div>
         </main>
       </div>
+      <AdminChatBot/>
     </div>
   )
 }

@@ -52,6 +52,12 @@ const menuItems = [
     href: "/admin/laporan",
     icon: FileText, 
   },
+   {
+    id: "chatbot",
+    label: "Kelola Chatbot",
+    href: "/admin/chat",
+    icon: FileText, 
+  },
 ]
 
 export default function AdminSidebar() {

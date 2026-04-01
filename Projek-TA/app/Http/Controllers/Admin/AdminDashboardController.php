@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Event;
 use App\Models\Order;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class AdminDashboardController extends Controller
 {
@@ -16,12 +16,11 @@ class AdminDashboardController extends Controller
     {
         // 1. Hitung Pengguna & EO
         $totalUsers = User::where('role', 'user')->count();
-        $totalEos = User::where('role', 'eo')->where('status', 'active')->count(); // Hanya yang aktif
+        $totalEos = User::where('role', 'eo')->where('status', 'active')->count();
         $pendingEos = User::where('role', 'eo')->where('status', 'pending')->count();
 
-        // 2. Hitung Event (Total & Pending Approval)
+        // 2. Hitung Event
         $totalEvents = Event::count();
-        // Asumsi status event yang belum disetujui adalah 'pending' atau 'draft', sesuaikan jika berbeda
         $pendingEvents = Event::where('status', 'pending')->count(); 
 
         // 3. Hitung Finansial & Tiket Global
@@ -31,11 +30,27 @@ class AdminDashboardController extends Controller
             ->where('orders.status', 'success')
             ->sum('order_items.qty');
 
-        // 4. Ambil 5 Event Terlaris (Leaderboard) berdasarkan Pendapatan
-        // Menggunakan DB raw query agar ringan dan cepat
+        // 📊 4. LOGIKA CHART: Pendapatan Platform 7 Hari Terakhir
+        $revenueData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i)->format('Y-m-d');
+            $displayDate = Carbon::now()->subDays($i)->format('d M');
+
+            // Hitung SEMUA order sukses di platform pada hari tersebut
+            $dailyRevenue = Order::where('status', 'success')
+                ->whereDate('updated_at', $date)
+                ->sum('total_price');
+
+            $revenueData[] = [
+                'date' => $displayDate,
+                'revenue' => (int) $dailyRevenue,
+            ];
+        }
+
+        // 5. Ambil 5 Event Terlaris (Leaderboard)
         $topEvents = DB::table('orders')
             ->join('events', 'orders.event_id', '=', 'events.id')
-            ->join('users', 'events.eo_id', '=', 'users.id') // Ambil nama EO
+            ->join('users', 'events.eo_id', '=', 'users.id')
             ->select('events.id', 'events.title', 'users.name as eo_name', DB::raw('SUM(orders.total_price) as revenue'))
             ->where('orders.status', 'success')
             ->groupBy('events.id', 'events.title', 'users.name')
@@ -43,7 +58,7 @@ class AdminDashboardController extends Controller
             ->limit(5)
             ->get();
 
-        // 5. Ambil 5 Transaksi Sukses Terbaru (Real-time Feed)
+        // 6. Ambil 5 Transaksi Sukses Terbaru
         $recentTransactions = DB::table('orders')
             ->join('events', 'orders.event_id', '=', 'events.id')
             ->join('users', 'orders.user_id', '=', 'users.id')
@@ -53,8 +68,7 @@ class AdminDashboardController extends Controller
             ->limit(5)
             ->get()
             ->map(function ($tx) {
-                // Format tanggal menjadi lebih bersahabat (misal: "2 jam yang lalu" atau format tanggal biasa)
-                $tx->date_formatted = \Carbon\Carbon::parse($tx->updated_at)->diffForHumans();
+                $tx->date_formatted = Carbon::parse($tx->updated_at)->diffForHumans();
                 return $tx;
             });
 
@@ -68,6 +82,7 @@ class AdminDashboardController extends Controller
             'total_tickets_sold' => (int) $totalTicketsSold,
             'top_events' => $topEvents,
             'recent_transactions' => $recentTransactions,
+            'revenue_data' => $revenueData, // 👈 Lempar data grafik ke React
         ]);
     }
 }

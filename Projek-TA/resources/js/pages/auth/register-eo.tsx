@@ -9,7 +9,7 @@ import { login } from '@/routes';
 
 export default function RegisterEO() {
     return (
-        <div className="min-h-screen w-full bg-gradient-to-br from-purple-50 via-white to-blue-50">
+        <div className="min-h-screen w-full bg-linear-to-br from-purple-50 via-white to-blue-50">
             <Head title="Register Event Organizer" />
 
             <div className="flex min-h-screen items-center justify-center px-4 py-12">
@@ -18,7 +18,7 @@ export default function RegisterEO() {
                     <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-xl">
                         {/* Logo/Brand Section */}
                         <div className="mb-8 text-center">
-                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-blue-600">
+                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-purple-600 to-blue-600">
                                 <svg
                                     className="h-8 w-8 text-white"
                                     fill="none"
@@ -294,7 +294,7 @@ export default function RegisterEO() {
                                         {/* Submit Button */}
                                         <Button
                                             type="submit"
-                                            className="h-12 w-full bg-gradient-to-r from-purple-600 to-blue-600 font-semibold text-white shadow-lg transition-all duration-200 hover:from-purple-700 hover:to-blue-700 hover:shadow-xl"
+                                            className="h-12 w-full bg-linear-to-r from-purple-600 to-blue-600 font-semibold text-white shadow-lg transition-all duration-200 hover:from-purple-700 hover:to-blue-700 hover:shadow-xl"
                                             disabled={processing}
                                         >
                                             {processing && (
