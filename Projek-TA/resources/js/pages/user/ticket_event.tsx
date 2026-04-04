@@ -31,7 +31,7 @@ export default function TicketPage() {
 
                                     {/* EVENT INFO */}
                                     <div className="mt-2 text-sm text-neutral-600">
-                                        <p>📅 {order.event?.date}</p>
+                                        <p>📅 {order.event?.start_date}</p>
                                         <p>📍 {order.event?.location}</p>
                                     </div>
 

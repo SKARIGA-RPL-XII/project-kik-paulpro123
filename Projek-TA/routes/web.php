@@ -15,6 +15,8 @@ use App\Http\Controllers\User\SummaryController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\UserTicketController;
+use App\Http\Controllers\User\UserChatbotController;
+use App\Http\Controllers\User\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -28,7 +30,7 @@ Route::get('/events/{event}', [UserController::class, 'show'])->name('user.event
 // Rute Jembatan (Klik Event -> Register -> Balik ke Event)
 Route::get('/go-to-event/{id}', function ($id) {
     session(['url.intended' => "/events/{$id}"]);
-    return redirect()->route('register'); 
+    return redirect()->route('register');
 })->name('event.redirect');
 
 
@@ -46,14 +48,12 @@ Route::middleware('guest')->group(function () {
 });
 
 
-// ==========================================
-// 3. LOGIKA DASHBOARD & USER UMUM (SUDAH LOGIN)
-// ==========================================
+// 3. USER UMUM (SUDAH LOGIN)
 Route::middleware(['auth', 'verified'])->group(function () {
-    
+
     // Proses Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    
+
     // Polisi Lalu Lintas Role (Distributor Dashboard)
     Route::get('/dashboard', function () {
         $user = Auth::user();
@@ -65,8 +65,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return Inertia::render('admin/dashboard');
         }
 
-        return app(UserController::class)->index(); // Default User
+        return app(UserController::class)->index();
     })->name('dashboard');
+
+    // Profile User
+    Route::get('/profile', function () {
+        return Inertia::render('user/profile');
+    })->name('profile');
+    Route::put('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('password.update');
 
     // ==========================================
     // PENDAFTARAN EO (WAJIB LOGIN SEBAGAI USER DULU)
@@ -91,6 +98,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/checkout/verify-payment', [PaymentController::class, 'verify']);
     Route::get('/checkout/success', [PaymentController::class, 'success']);
     Route::get('/checkout/failed/{orderId}', [PaymentController::class, 'failed'])->name('checkout.failed');
+
+    // Chatbot User
+    Route::post('/chatbot/ask', [UserChatbotController::class, 'ask'])->name('user.chatbot.ask');
 });
 
 
@@ -146,7 +156,7 @@ Route::middleware(['auth', 'role:admin'])
     ->group(function () {
         // Dashboard Admin
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        
+
         // Kelola Akun
         Route::get('/manage-akun', [AdminController::class, 'index'])->name('accounts');
 

@@ -110,8 +110,8 @@ export default function Dashboard() {
                                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                                         />
 
-                                        {/* Gradient Overlay */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                                        {/* Liniear Overlay */}
+                                        <div className="absolute inset-0 bg-liniear-to-t from-black/60 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
 
                                         {/* Official Badge */}
                                         <span className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow-lg backdrop-blur-sm">
@@ -130,7 +130,7 @@ export default function Dashboard() {
                                         </span>
 
                                         {/* Price Badge */}
-                                        <span className="absolute bottom-3 left-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 px-4 py-1.5 text-xs font-bold text-gray-900 shadow-lg">
+                                        <span className="absolute bottom-3 left-3 rounded-full bg-liniear-to-r from-yellow-400 to-orange-400 px-4 py-1.5 text-xs font-bold text-gray-900 shadow-lg">
                                             {event.tickets_min_price
                                                 ? `Mulai Rp ${Number(event.tickets_min_price).toLocaleString('id-ID')}`
                                                 : 'Gratis'}
@@ -146,7 +146,7 @@ export default function Dashboard() {
                                         <div className="space-y-2">
                                             <p className="flex items-start gap-2 text-sm text-gray-600">
                                                 <svg
-                                                    className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-500"
+                                                    className="mt-0.5 h-4 w-4 shrink-0 text-blue-500"
                                                     fill="none"
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
@@ -178,7 +178,7 @@ export default function Dashboard() {
 
                                             <p className="flex items-start gap-2 text-sm text-gray-600">
                                                 <svg
-                                                    className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500"
+                                                    className="mt-0.5 h-4 w-4 shrink-0 text-red-500"
                                                     fill="none"
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
@@ -203,7 +203,7 @@ export default function Dashboard() {
                                         </div>
 
                                         {/* CTA Button */}
-                                        <button className="mt-4 w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:shadow-lg">
+                                        <button className="mt-4 w-full rounded-lg bg-liniear-to-r from-blue-600 to-indigo-600 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:shadow-lg">
                                             Lihat Detail
                                         </button>
                                     </div>

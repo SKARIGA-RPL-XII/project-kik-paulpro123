@@ -1,7 +1,6 @@
 import { AppContent } from '@/components/app-content';
 import { AppHeader } from '@/components/app-header';
 import { AppShell } from '@/components/app-shell';
-import NavFooter from '@/components/nav-footer';
 import type { AppLayoutProps } from '@/types';
 
 export default function AppHeaderLayout({
@@ -11,8 +10,7 @@ export default function AppHeaderLayout({
     return (
         <AppShell>
             <AppHeader/>
-            <AppContent className="pb-16" >{children}</AppContent>
-            <NavFooter/>
+            <AppContent className="pb-0" >{children}</AppContent>
         </AppShell>
     );
 }
